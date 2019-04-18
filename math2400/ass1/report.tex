@@ -1,0 +1,268 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{float}
+
+\linespread{1.3}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\title{Assignment 1}
+\author{Joshua Hwang (44302650)}
+\date{1 March}
+
+\begin{document}
+\maketitle
+
+\section{Proof using formal definition of a limit}
+Show $\lim_{n \to \infty} \frac{1}{\sqrt{n}} = 0$.
+
+Given some $\epsilon > 0$, let $M > \frac{1}{\epsilon^2}$
+so $\frac{1}{\sqrt{M}} < \epsilon$.
+Now, $\forall n \geq M$
+we get $\frac{1}{\sqrt{n}} \leq \frac{1}{\sqrt{M}}$
+\begin{align*}
+    \left|x_n - 0\right| &= \left|\frac{1}{\sqrt{n}} - 0\right| \\
+    &= \frac{1}{\sqrt{n}} \leq \frac{1}{\sqrt{M}} < \epsilon
+\end{align*}
+
+Therefore, $\lim_{n \to \infty} \frac{1}{\sqrt{n}} = 0$.
+
+\section{Prove a sequence is a Cauchy sequence}
+We first note that $\forall y_n \geq 0$ because $|x_m - x_k| \leq y_k$.
+
+Since $\{y_n\}^\infty_{n=1}$ converges to $0$. We pick an $M$ such that
+$y_k < \epsilon$ for all $k > M$ for any arbitrarily chosen $\epsilon > 0$.
+There exists such a $y_k < \epsilon$ because the definition of convergence
+(through the $\epsilon$ - $N$ definition).
+
+Now choose any $k > M$ and maintain $m > k > M$,
+\begin{align*}
+    |x_m - x_k| &\leq y_k < \epsilon \\
+    |x_m - x_k| &< \epsilon \\
+\end{align*}
+
+Which is statisfied $\forall m \geq \forall k > M$.
+Thus conforming to the definition of a Cauchy sequence proving it is a
+Cauchy sequence.
+
+\section{Prove a recursive sequence converges}
+We first prove the sequence is monotonic increasing. The first case are
+easy, $1 < \sqrt{2}$. From then on we use induction, let $k$ and $k+1$
+be the last known values it works for.
+\begin{align*}
+    x_k &< x_{k+1} \\
+    x_k+1 &< x_{k+2} \\
+    \sqrt{2}^{x_k} &< \sqrt{2}^{x_{k+1}} \\
+    x_k \log\left(\sqrt{2}\right) &< x_{k+1} \log\left(\sqrt{2}\right) \\
+    x_k &< x_{k+1}
+\end{align*}
+
+Now we know the sequence is constantly increasing so all we need is to show we
+have an upper bound. In this case we'll show no term in the sequence will be
+higher than $2$. We will use induction once again to prove this.
+
+The base case is obvious
+\begin{align*}
+    \sqrt{2} &< 2 \\
+    \sqrt{2}^1 &< \sqrt{2}^2 \\
+    1 &< \frac{\sqrt{2}^2}{\sqrt{2}^1} \\
+    1 &< \sqrt{2} \\
+\end{align*}
+
+Knowing that $\sqrt{2} > 1$ from using a calculator we can conclude the base
+case holds.
+
+Now assume the $k$-th term works, $x_k < 2$, and
+prove that the $k+1$-th term also works.
+\begin{align*}
+    x_k &< 2 \\
+    \sqrt{2}^{x_k} &< \sqrt{2}^2 \\
+    x_{k+1} &< 2
+\end{align*}
+
+Which means we have an upper limit at $2$ which means the sequence converges.
+
+\section{Show a series is convergent}
+\begin{align*}
+    \sum^\infty_{n=1} \frac{(-1)^n}{n}
+\end{align*}
+
+First note that the sequence $\frac{1}{n}$ is monotone decreasing since
+$n \in \mathbb{N}$.
+\begin{align*}
+    n < n+1 \\
+    \frac{1}{n+1} < \frac{1}{n} \\
+\end{align*}
+
+Split the sequence into addition and subtraction terms
+since $\frac{1}{n}$ are monotone decreasing each subtraction-addition pair
+is actually decreasing thus the series is decreasing as $n$ gets larger.
+\begin{align*}
+    \sum^\infty_{n=1} \frac{(-1)^n}{n}
+    &= \left(-\frac{1}{1} + \frac{1}{2}\right)
+    + \left(-\frac{1}{3} + \frac{1}{4}\right) ... \\
+\end{align*}
+
+But every addition-subtraction pair is increasing,
+\begin{align*}
+    \sum^\infty_{n=1} \frac{(-1)^n}{n}
+    &= -\frac{1}{1} + \left(\frac{1}{2} - \frac{1}{3}\right)
+    + \left(\frac{1}{4} - \frac{1}{5}\right) ... \\
+\end{align*}
+
+Since every bracketed term increases the sum we take a lower bound of
+$-\frac{1}{1}$. We now have a lower
+bound and a monotone decreasing series therefore it is convergent.
+
+\section{Work with a sequence with a variable initial term}
+The sequence in question starts at $x_1 = a$ and follows with
+$x_{n+1} = x_n \left(x_n + \frac{1}{n}\right)$
+
+\subsection{When the sequence is monotone increasing and bounded}
+Let $\lim_{n \to \infty} x_n = x$. Thus,
+\begin{align*}
+    x_{n+1} &= x_n \left(x_n + \frac{1}{n}\right) \\
+    \lim_{n \to \infty} x_{n+1}
+    &= \lim_{n \to \infty} x_n \left(x_n + \frac{1}{n}\right) \\
+    x &= x \left(x\right) \\
+    0 &= x(x-1) \\
+\end{align*}
+
+Since our sequence begins positive and is monotone increasing we can rule out
+$0$. Thus our $\lim_{n \to \infty} x_n = 1$.
+
+\subsection{Find $a$ so the sequence is not monotone}
+Through an example, let $a = 0.6$.
+\begin{align*}
+    x_1 &= 0.6 \\
+    x_2 &= 0.66 \\
+    x_3 &= 0.6556
+\end{align*}
+
+\subsection{Find $a$ so the sequence is unbounded}
+Consider a new sequence $y_{n+1} = y_n^2$.
+We observe $x_{n+1} = y_{n+1}$
+\begin{align*}
+    \frac{1}{n} &> 0 \\
+    x_n + \frac{1}{n} &> x_n \\
+    x_n\left(x_n + \frac{1}{n}\right) &> x_n^2
+\end{align*}
+
+so if we can prove $x_n^2$ is unbounded positively then so is 
+$\{x_n\}_{n=1}^\infty$.
+
+We know use a ratio test to show our $\{y_n\}_{n=1}^\infty$ is unbounded.
+\begin{align*}
+    \lim_{n \to \infty} \frac{y_{n+1}}{y_n}
+    &= \lim_{n \to \infty} \frac{y_n^2}{y_n} \\
+    &= \lim_{n \to \infty} y_n \\
+    &= ((...((a^2)^2)^2...)) \\
+\end{align*}
+
+Now we prove that $((...((a^2)^2)^2...))$ can unbounded when $a > 1$.
+Consider a sequence where each successive term is the previous squared
+(i.e. $x_{k+1} = x_k^2$). Let $x_0 > 1$, so $x_0 = 1 + \epsilon_0$ where
+$\epsilon_0 \in \mathbb{R}$. Assume the $k$-th term works,
+$x_k = 1 + \epsilon_k > 1$. Let's check the $k+1$-th term works as well.
+\begin{align*}
+    x_k &= 1 + \epsilon_k \\
+    x_k^2 &= (1 + \epsilon_k)^2 \\
+    x_{k+1} &= 1 + 2\epsilon_k + \epsilon_k^2 \\
+    x_{k+1} &> 1 + 2\epsilon_k \\
+\end{align*}
+
+Note that $\epsilon_{k+1} > 2\epsilon_k$. With each term the $\epsilon$ value
+is at least doubled. Thus we can conclude that $x_0 > 1$ will produce an
+unbound sequence if successively squared.
+
+If $a > 1$ then the ratio is well above 1 and the sequence is unbounded.
+Since $\exists a$ where $\{y_n\}_{n=1}^\infty$ is unbounded there also
+$\exists a$ where $\{x_n\}_{n=1}^\infty$ is unbounded.
+
+\section{Determine if convergent}
+Since all the questions below have denominators that are monotonic increasing
+we can see that they are well defined and don't have $\frac{1}{0}$ issues.
+
+\subsection{$\sum^\infty_{n=1} n\sin\left(\frac{1}{n}\right)$}
+We use the fact that a series a convergent series $\sum x_n$ has a convergent
+sequence $x_n$ with limit $\lim_{n \to \infty} x_n = 0$.
+Thus we check if $\lim_{n \to \infty} n\sin\left(\frac{1}{n}\right) = 0$.
+
+First we prove a well known limit, $\lim_{x \to 0} \frac{\sin x}{x} = 1$.
+We use L'Hopital's rule to evaluate this limit. L'Hopital's rule applies when
+the limit evaluates to $\frac{0}{0}$ or $\frac{\infty}{\infty}$. In this 
+particular case it's clear that the limit will reduce to the first case.
+\begin{align*}
+    \lim_{x \to 0} \frac{\sin x}{x} &= \frac{\sin(0)}{0} \\
+    &= \frac{0}{0}
+\end{align*}
+
+L'Hopital's rule means we differentiate the numerator and denominator and
+evaluate the limit on those two.
+\begin{align*}
+    \lim_{x \to 0} \frac{\sin x}{x} &= \lim_{x \to 0} \frac{\cos(x)}{1} \\
+    &= \frac{\cos(0)}{1} \\
+    &= \frac{1}{1} \\
+\end{align*}
+
+Therefore we have proven the original claim
+$\lim_{x \to 0} \frac{\sin x}{x} = 1$.
+
+From here we adjust the limit by letting $n = \frac{1}{x}$.
+So the limit equation becomes
+\begin{align*}
+    \lim_{x \to 0} \frac{1}{x} &= \lim_{n \to \infty} n \\
+\end{align*}
+
+Replacing these in the $\lim_{x \to 0} \frac{\sin x}{x} = 1$ gives
+\begin{align*}
+    \lim_{x \to 0} \frac{\sin x}{x} &= 1 \\
+    \lim_{n \to \infty} n\sin\left(\frac{1}{n}\right) &= 1 \\
+\end{align*}
+
+So this reveals the terms of the series converge to 1 NOT 0. Therefore, the
+series will diverge.
+
+\subsection{$\sum^\infty_{n=1} \frac{1}{n^n}$}
+From the lecture notes we can remove the head of this infinite sum and still
+keep the property of convergence if and only if the original series converged
+(K-tail). We begin the new series at $n=2$ so
+$\sum^\infty_{n=2} \frac{1}{n^n}$. Now we show a convergent
+geometric series has larger terms than $\frac{1}{n^n}$ (Note that this series
+is monotone increasing since all terms of the series are positive).
+
+Consider the geometric series $\sum^\infty_{n=2} \frac{1}{2^n}$. Using
+induction we prove $\frac{1}{2^n} \geq \frac{1}{n^n} \quad \forall n \geq 2$
+which means that
+$\sum^\infty_{n=2} \frac{1}{2^n} \geq \sum^\infty_{n=2} \frac{1}{n^n}$.
+The base case starts with $\frac{1}{4} \geq \frac{1}{4}$. Now assume the
+$k$-th terms hold and see if the $k+1$-th terms also apply.
+\begin{align*}
+    \frac{1}{2^{k+1}} &> \frac{1}{(k+1)^{k+1}} \\
+    \frac{1}{2}^{k+1} &> \frac{1}{(k+1)}^{k+1} \\
+    \frac{1}{2} &> \frac{1}{(k+1)} && \text{Only applies when $k>1$} \\
+\end{align*}
+
+Since our series has $\forall n \geq 2$ the inductive step is valid. Since a
+geometric series converges if $r > 1$ and
+$\sum^\infty_{n=2} \frac{1}{2^n} \geq \sum^\infty_{n=2} \frac{1}{n^n}$.
+Now we know our original sequence has an upperbound and is monotone increasing
+therefore it will converge.
+
+\subsection{$\sum^\infty_{n=2} \frac{1}{n\ln n}$}
+We will use an integral test on this series. We may use this test because
+$\frac{1}{n\ln n}$ is a decreasing, nonnegative function. The integral test
+states $\sum^\infty_{n=2} \frac{1}{n}$ converges if and only if
+$\int^\infty_{2} \frac{1}{n} dn$ converges.
+\begin{align*}
+    \int^\infty_{2} \frac{1}{n} dn &= \ln(\ln(n))|^\infty_2 \\
+    &= \lim_{M \to \infty} \ln(\ln(M)) - \ln(\ln(2)) \\
+    &= \lim_{M \to \infty} \ln(\log_2(M)) \\
+    &= \infty
+\end{align*}
+
+The integral diverges therefore the original series also diverges.
+
+\end{document}

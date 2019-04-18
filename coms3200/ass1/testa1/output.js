@@ -1,0 +1,2 @@
+var x = "You either die a hero, or live long enough to see yourself become the villain";
+

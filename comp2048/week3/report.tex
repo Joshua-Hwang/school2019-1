@@ -1,0 +1,133 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{verbatim}
+
+\usepackage[margin=0.5in]{geometry}
+
+\linespread{1.3}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\title{Assignment 1}
+\author{Joshua Hwang (44302650)}
+\date{11 March}
+
+\begin{document}
+\maketitle
+\section{Caesar cipher}
+\subsection{\texttt{test\_caesar.py}}
+\verbatiminput{test_caesar.py}
+
+The output is,
+\begin{verbatim}
+Message: The quick brown fox jumped over the lazy dog
+Cypher Dict: {'a': 'b', 'b': 'c', 'c': 'd', 'd': 'e' ...
+Encrypted Message: Uif rvjdl cspxo gpy kvnqfe pwfs uif mbaz eph
+Decrypted Message: The quick brown fox jumped over the lazy dog
+\end{verbatim}
+
+\subsection{\texttt{test\_caesar\_break.py} part b and c}
+\verbatiminput{test_caesar_break.py}
+
+The output is,
+\begin{verbatim}
+Z : 1
+y : 15
+p : 27
+  : 50
+c : 14
+x : 6
+m : 2
+e : 18
+z : 18
+w : 4
+v : 5
+f : 9
+a : 6
+l : 12
+s : 7
+d : 6
+o : 7
+h : 7
+j : 6
+q : 4
+E : 2
+g : 4
+r : 5
+t : 13
+H : 1
+n : 1
+D : 1
+S : 1
+Max Ocurring Letter: p
+Predicted Shift: 11
+Message: One remember to look up at the stars and not down at your feet
+Two never give up work
+Work gives you meaning and purpose and life is empty without it
+Three if you are lucky enough to find love remember it is there and dont throw it away
+Stephen Hawking
+\end{verbatim}
+
+\section{Enigma cipher}
+\subsection{\texttt{test\_enigma\_simple.py} part a and b}
+\verbatiminput{test_enigma_simple.py}
+
+The output is,
+\begin{verbatim}
+Message: Hello World
+Encoded Message: Ncsmm Ywdpy
+Decoded Message: Hello World
+Decoded Message: What will I do? The same thing I do every night. Try and take over the world!
+\end{verbatim}
+
+\subsection{\texttt{test\_enigma\_break.py} part c, d and e}
+\verbatiminput{test_enigma_break.py}
+
+The output is,
+\begin{verbatim}
+Gdwm Qopjmw!
+To all my loyal Spider Monkeys!
+Half of you are to attack the enemy on their left flank.
+Half of you are to attack the enemy on their right flank
+and the rest of you shall come with me down the middle! Hail Shakes!
+
+Tries: 11771
+\end{verbatim}
+
+My computer took roughly 5 seconds to crack the cipher.
+We can use Moore's law as an approximation. Since 1940 was 80 years ago
+there would've been 40 doublings since then, the time would have halved
+every two years.
+\begin{align*}
+    \frac{5 \times 2^40}{60\times60\times24\times365}
+    &\approx 174326
+\end{align*}
+
+A 1940s computer will take 174326 years to solve.
+
+By adding two new rotors we now have ${}^5P_3 = 60$ possible rotor combos. Each
+rotor can be set
+Not only that but we a plug board where each plug can be placed in
+any remaining letter giving us ${}^{26}C_10 = 5.3 \times 10^6$ (Note: you could
+choose not using a plug and certain ordering are not equivalent
+but we'll ignore those).
+Multiplying these possibilities gives us $3.19 \times 10^8$ times
+longer than our previous method.
+
+Thus it would take 50 years to complete.
+
+\section{Code Breaking}
+Though we have no idea what encryption is being used we shall try some
+rudimentary tactics. First we'll try a frequency check
+
+The first part appears to be the work "ATTACK" where A is 19, T is 17 etc.
+The next words are "PEARL" and "HARBOR" since they fit with the other A values
+and also because of what happened in 1941. The remaining parts are "DECEMBER"
+and "SEVEN" from context and the placement of other Es.
+
+The full message read: "ATTACK PEARL HARBOR DECEMBER SEVEN".
+
+\end{document}

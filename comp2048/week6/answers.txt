@@ -1,0 +1,33 @@
+Part 1
+a)
+The first example has 4 states.
+q0, saw_#, saw_## and qa (also qr is implied)
+
+The second example has 9 states.
+q0, End, FindDelimiter0, FindDelimiter1, Check0, Check1, FindLeftmost, FindNext and qa. (qr)
+
+b)
+The library we're using has a neat debug feature which prints state and r/w head.
+
+c)
+First example checks for two hashes and only two hashes. Fails in all other
+circumstances.
+
+Second example checks two substrings are equal given a hash splitting them.
+
+Part 2
+See code
+
+Part 3
+b)
+Since we're dealing with an infinite tape it's way better to generate
+the data structure when needed instead of storing infinite space in memory
+
+c)
+Got 4 ones
+
+d)
+Comparing our result to Wikipedia we find our result is the best possible for
+2 cards
+
+e)

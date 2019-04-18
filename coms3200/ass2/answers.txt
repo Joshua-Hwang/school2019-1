@@ -1,0 +1,42 @@
+Reasons why QUIC is superior
+1. The initial handshake is reduced
+2. QUIC has encryption by default unlike TCP (also speeds thing up)
+3. it's difficult for TCP to change since so many OS kernels and middleboxes
+implement it. QUIC is built on top of UDP so it is much easier to change.
+4. Since we're using UDP the connection aren't reliant on IP. We can swap
+networks and maintain our connection ID. Great for portable devices.
+
+Define:
+stream - an ordered byte-stream abstraction to an application.
+connection - determined by a connection ID. It allows for multiplexing in our
+system. Unsure if connection ID is the same on each endpoint. But allows
+the application to keep a track of each QUIC connection
+frame - STREAM frames encapsulate data sent by an application. They contain
+info like data order
+
+Is it possible for two different packets to have 10^20 as their packet number?
+(Same connection)
+Section 12.3 states the packet number is an integer in the range 0 to (2^62)-1.
+10^20 = (2^3.32)^20 = 2^66... This is higher than the max packet number.
+Not only, but packet numbers are unique for a connection they do not reset.
+
+What error causes a RESET_STREAM frame instead of a CONNECTION_CLOSE frame?
+Section 11.1
+CONNECTION_CLOSE is called when the protocol is corrupted/not to standard.
+RESET_STREAM is called by application level errors.
+
+If an invalid CONNECTION_CLOSE frame is received how should it signal this error.
+End of section 11.1
+"An endpoint that receives an invalid CONNECTION_CLOSE frame MUST NOT signal
+the existence of the error to its peer."
+
+0x00000000
+PADDING FRAME
+
+0x05000000
+STOP SENDING frame
+
+0x10600000
+MAX DATA frame with 0x600000 that is 6291456 bytes
+which is 6 megabytes.
+
