@@ -1,3 +1,5 @@
+PART A
+-------------------------------------------------------------------------------
 Reasons why QUIC is superior
 1. The initial handshake is reduced
 2. QUIC has encryption by default unlike TCP (also speeds thing up)
@@ -25,7 +27,8 @@ Section 11.1
 CONNECTION_CLOSE is called when the protocol is corrupted/not to standard.
 RESET_STREAM is called by application level errors.
 
-If an invalid CONNECTION_CLOSE frame is received how should it signal this error.
+If an invalid CONNECTION_CLOSE frame is received how should it signal
+ this error.
 End of section 11.1
 "An endpoint that receives an invalid CONNECTION_CLOSE frame MUST NOT signal
 the existence of the error to its peer."
@@ -40,3 +43,24 @@ STOP SENDING frame
 MAX DATA frame with 0x600000 that is 6291456 bytes
 which is 6 megabytes.
 
+PART B
+-------------------------------------------------------------------------------
+Sequence number 2910945102 initiates the connection.
+(If by initiate you mean the very beginning of the handshake)
+
+The server returns at #8 with 3558620493.
+
+Flags for packet #10 are,
+00011000
+
+At #1036 and #1037 we see the TCP Sequence numbers. The number of missing bytes
+can be determined by the skip in the sequence numbers from 1118754 to 1130434.
+The final byte of packet 1036 was 1120213 thus we're missing 10220 bytes of the
+TCP connection. This is 7 frames. Each frame is able to contain 1514 bytes so
+10598 bytes were lost.
+
+The first lost frame retransmitted would contain the byte 1120214. This occurs
+at packet #1125.
+
+All missing packets have been received by packet #1140 when its acknowledgement
+number jumps to 1194674, our regularly scheduled program.
