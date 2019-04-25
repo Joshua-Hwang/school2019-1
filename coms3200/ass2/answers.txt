@@ -1,5 +1,6 @@
 PART A
 -------------------------------------------------------------------------------
+[1]
 Reasons why QUIC is superior
 1. The initial handshake is reduced
 2. QUIC has encryption by default unlike TCP (also speeds thing up)
@@ -8,6 +9,7 @@ implement it. QUIC is built on top of UDP so it is much easier to change.
 4. Since we're using UDP the connection aren't reliant on IP. We can swap
 networks and maintain our connection ID. Great for portable devices.
 
+[2]
 Define:
 stream - an ordered byte-stream abstraction to an application.
 connection - determined by a connection ID. It allows for multiplexing in our
@@ -16,51 +18,88 @@ the application to keep a track of each QUIC connection
 frame - STREAM frames encapsulate data sent by an application. They contain
 info like data order
 
+[3]
 Is it possible for two different packets to have 10^20 as their packet number?
 (Same connection)
 Section 12.3 states the packet number is an integer in the range 0 to (2^62)-1.
 10^20 = (2^3.32)^20 = 2^66... This is higher than the max packet number.
 Not only, but packet numbers are unique for a connection they do not reset.
 
+[4]
 What error causes a RESET_STREAM frame instead of a CONNECTION_CLOSE frame?
 Section 11.1
 CONNECTION_CLOSE is called when the protocol is corrupted/not to standard.
 RESET_STREAM is called by application level errors.
 
+[5]
 If an invalid CONNECTION_CLOSE frame is received how should it signal
  this error.
 End of section 11.1
 "An endpoint that receives an invalid CONNECTION_CLOSE frame MUST NOT signal
 the existence of the error to its peer."
 
+[6]
 0x00000000
 PADDING FRAME
 
+[7]
 0x05000000
 STOP SENDING frame
 
+[8]
 0x10600000
 MAX DATA frame with 0x600000 that is 6291456 bytes
 which is 6 megabytes.
 
 PART B
 -------------------------------------------------------------------------------
+[1]
+[a]
 Sequence number 2910945102 initiates the connection.
 (If by initiate you mean the very beginning of the handshake)
 
+[b]
 The server returns at #8 with 3558620493.
 
+[2]
 Flags for packet #10 are,
 00011000
 
+[3]
+Based on page 15 of RFC793 there are 192 bits including a variable amount of
+padding to ensure the header ends by a multiple of 32.
+
+[4]
+There is a significant jump in time between packet #14 and #16. From packet
+#12 (inclusive) we get 3 consecutive frames from the server.
+
+[5]
+[a]
+Shift count for client is 8
+
+[b]
+For server it's 7
+
+[6]
+By the method determined in page 9 of RFC7323 we use
+101*2^7 to bit shift the actual size.
+This is because the server is accepting packets scaled by 2^7.
+
+[7]
+Packet #405 changes the window size from 256 to 3096. Considering the shift
+count that is a change from 65536 to 792576
+
+[8]
 At #1036 and #1037 we see the TCP Sequence numbers. The number of missing bytes
 can be determined by the skip in the sequence numbers from 1118754 to 1130434.
 The final byte of packet 1036 was 1120213 thus we're missing 10220 bytes of the
 TCP connection. This is 7 frames. Each frame is able to contain 1514 bytes so
 10598 bytes were lost.
 
+[9]
 The first lost frame retransmitted would contain the byte 1120214. This occurs
 at packet #1125.
 
+[10]
 All missing packets have been received by packet #1140 when its acknowledgement
 number jumps to 1194674, our regularly scheduled program.
