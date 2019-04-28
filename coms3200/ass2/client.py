@@ -3,7 +3,8 @@ import socket
 import sys
 from scapy.packet import Packet
 from scapy.fields import ByteField, ShortField, BitField
-from scapy.all import *
+from scapy.all import raw
+import time
 
 
 LOCALHOST = "127.0.0.1"
@@ -49,26 +50,34 @@ class RUSH(Packet):
 """
 DEBUG Level 0 - Do not print anything
 DEBUG Level 1 - Print packet headers
-DEBUG Level 2 - Print packet headers + data
+DEBUG Level 2 - Print packet headers + timestamp
+DEBUG Level 3 - Print packet headers + timestamp + data
+DEBUG Level 9 - Special test level
 """
 
 
 class Connection:
-    def __init__(self, my_ip, my_port, serv_ip, serv_port, debug_level=1):
+    def __init__(self, my_ip, my_port, serv_ip, serv_port, output=sys.stdout, debug_level=1):
         self._my_info = (my_ip, my_port)
         self._serv_info = (serv_ip, serv_port)
         self._socket = None
         self._seq_num = 1
+        self._output = output
         self._debug_level = debug_level
+        self._start_time = time.time()
 
-    def _print(self, pkt, port, mode):
+    def _print(self, pkt, port, mode, note=""):
         output = ""
+        timer = round(time.time() - self._start_time, 4)
         if self._debug_level > 0:
-            output += "{} port {}:\n    (seq_num={}, ack_num={}, flags={}{}{}{}{})".format(mode, port, pkt.seq_num,
-                        pkt.ack_num, pkt.ack_flag, pkt.nak_flag, pkt.get_flag, pkt.dat_flag, pkt.fin_flag)
-        if self._debug_level == 2:
+            output += "{} port{}{}:\n    (seq_num={}, ack_num={}, flags={}{}{}{}{}) {}".format(mode, 
+                        " " + str(port) if self._debug_level != 9 else "", 
+                        " @ {}s".format(timer) if self._debug_level in (2, 3) else "",
+                        pkt.seq_num, pkt.ack_num, pkt.ack_flag, pkt.nak_flag, pkt.get_flag, pkt.dat_flag, pkt.fin_flag, 
+                        note if self._debug_level != 9 else "")
+        if self._debug_level in (3, 9):
             output += "\n    Data: {}".format(repr(int_to_str(pkt.data)))
-        print(output + "\n")
+        self._output.write(output + "\n\n")
 
     def connect(self):
         try:
@@ -96,6 +105,43 @@ class Connection:
         except:
             assert False, "Could not decode packet: " + repr(raw_data)
 
+    def nak(self):
+        pkt, info = self.recv_pkt()
+        self._print(pkt, info[1], RECV_MODE)
+        nak = RUSH(seq_num=self._seq_num, ack_num=1, dat_flag=1, nak_flag=1)
+        self._socket.sendto(raw(nak), self._serv_info)
+        self._print(nak, self._serv_info[1], SEND_MODE)
+        self._seq_num += 1
+
+    def timeout(self):
+        pkt, info = self.recv_pkt()
+        self._print(pkt, info[1], RECV_MODE)
+        # let the server timeout by doing nothing
+
+    def invalid_flags(self):
+        """Invalid because the server should be expecting an ACK or a NAK, not a get"""
+        pkt, info = self.recv_pkt()
+        self._print(pkt, info[1], RECV_MODE)
+        invalid = RUSH(seq_num=self._seq_num, ack_num=1, get_flag=1)
+        self._socket.sendto(raw(invalid), self._serv_info)
+        self._print(invalid, self._serv_info[1], SEND_MODE, note="[INVALID]")
+
+    def invalid_seq(self):
+        """Invalid because the server is expecting a packet with sequence number 2"""
+        pkt, info = self.recv_pkt()
+        self._print(pkt, info[1], RECV_MODE)
+        invalid = RUSH(seq_num=self._seq_num+1, ack_num=1, dat_flag=1, ack_flag=1)
+        self._socket.sendto(raw(invalid), self._serv_info)
+        self._print(invalid, self._serv_info[1], SEND_MODE, note="[INVALID]")
+
+    def invalid_ack(self):
+        """Invalid because the server is expecting a packet acknowledging packet 1"""
+        pkt, info = self.recv_pkt()
+        self._print(pkt, info[1], RECV_MODE)
+        invalid = RUSH(seq_num=self._seq_num, ack_num=2, dat_flag=1, ack_flag=1)
+        self._socket.sendto(raw(invalid), self._serv_info)
+        self._print(invalid, self._serv_info[1], SEND_MODE, note="[INVALID]")
+
     def run(self):
         while True:
             pkt, info = self.recv_pkt()
@@ -118,31 +164,50 @@ class Connection:
                 self._seq_num += 1
                 self._print(ack, self._serv_info[1], SEND_MODE)
 
+SIMPLE_MODE = [Connection.run]
+NAK_MODE = [Connection.nak, Connection.run]
+MULTI_NAK_MODE = [Connection.nak, Connection.nak, Connection.nak, Connection.run]
+TIMEOUT_MODE = [Connection.timeout, Connection.run]
+MULTI_TIMEOUT_MODE = [Connection.timeout, Connection.nak, Connection.timeout, Connection.run]
+INVALID_SEQ_MODE = [Connection.invalid_seq, Connection.run]
+INVALID_ACK_MODE = [Connection.invalid_ack, Connection.run]
+INVALID_FLAGS_MODE = [Connection.invalid_flags, Connection.run]
 
 def main(argv):
     if len(argv) <= 2 or not argv[1].isdigit() or not argv[2].isdigit():
-        print("Usage: python3 client.py client_port server_port [verbosity]")
+        print("Usage: python3 client.py client_port server_port [-m mode] [-v verbosity] [-o output]")
         return
 
     my_port = int(argv[1])
     serv_port = int(argv[2])
 
-    debug_level = 1
-    if len(argv) > 2:
-        if argv[1] in ("0", "1", "2"):
-            debug_level = int(argv[1])
+    debug_level = 2
+    mode = SIMPLE_MODE
+    output = sys.stdout
+    for i, arg in enumerate(argv[3:]):
+        if arg == "-v" and argv[i+4] in ("0", "1", "2", "3", "9"):
+            debug_level = int(argv[i+4])
+        elif arg == "-m":
+            mode = {"SIMPLE": SIMPLE_MODE, "NAK": NAK_MODE, "MULTI_NAK": MULTI_NAK_MODE, "TIMEOUT": TIMEOUT_MODE,
+                    "MULTI_TIMEOUT": MULTI_TIMEOUT_MODE, "INVALID_SEQ": INVALID_SEQ_MODE,
+                    "INVALID_ACK": INVALID_ACK_MODE, "INVALID_FLAGS": INVALID_FLAGS_MODE}.get(argv[i+4].upper(), SIMPLE_MODE)
+        elif arg == "-o":
+            output = open(argv[i+4], "w")
 
-    conn = Connection(LOCALHOST, my_port, LOCALHOST, serv_port, debug_level)
+    conn = Connection(LOCALHOST, my_port, LOCALHOST, serv_port, output, debug_level)
     if not conn.connect():
         return
 
     try:
         conn.send_request(FILE_NAME)
-        conn.run()
+        for method in mode:
+            method(conn)
     except AssertionError as e:
         print(e.args[0])
 
     conn.close()
+    if output != sys.stdout:
+        output.close()
 
 if __name__ == "__main__":
     main(sys.argv)

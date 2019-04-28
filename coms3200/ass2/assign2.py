@@ -2,6 +2,7 @@
 import sys
 import socket
 import struct
+import time
 
 class ConnectionInfo:
     def __init__(self):
@@ -9,13 +10,14 @@ class ConnectionInfo:
         self.family = socket.AF_INET
         self.type = socket.SOCK_DGRAM
         self.ip = "localhost"
-        self.port = 43775 # ZZZ - should be 0 not declared yet
+        self.port = 0 # ZZZ - should be 0 not declared yet
         self.buffer_size = 1500 # as declared in the spec
         self.content_size = 1466 # as declared in the spec
+        self.timeout = 3.0
         # the sequence number we will be sending out
-        self.server_seq = 1
+        self.server_seq = 0
         # the sequence number of the latest confirmed packet
-        self.client_seq = 1
+        self.client_seq = 0
     def add_sock(self, sock):
         self._sock = sock
     def get_sock(self):
@@ -66,13 +68,15 @@ def parse_rush_packet(data):
         return None
 
     if bit_count == 2:
-        # DAT/ACK and FIN/ACK are the only double headers
+        # DAT/ACK, DAT/NAK and FIN/ACK are the only double headers
         dat_ack_present = ret.get_flag(RushPacket.DAT) \
             and ret.get_flag(RushPacket.ACK)
+        dat_nak_present = ret.get_flag(RushPacket.DAT) \
+            and ret.get_flag(RushPacket.NAK)
         fin_ack_present = ret.get_flag(RushPacket.FIN) \
             and ret.get_flag(RushPacket.ACK)
 
-        if not (dat_ack_present or fin_ack_present):
+        if not (dat_ack_present or dat_nak_present or fin_ack_present):
             return None
 
     return ret
@@ -109,15 +113,23 @@ def send_and_listen_packet(conn_info, content):
 
     header = create_header(conn_info, RushPacket.DAT)
     payload = header + content.ljust(conn_info.content_size, b'\x00')
-    conn_info.get_sock().settimeout(3)
     conn_info.get_sock().sendto(payload, conn_info.get_addr())
+
+    remaining_time = conn_info.timeout
     while True:
         try:
+            conn_info.get_sock().settimeout(remaining_time)
+            start_time = time.time()
             data, addr = conn_info.get_sock().recvfrom(conn_info.buffer_size)
+            remaining_time -= time.time() - start_time
+            remaining_time = max(remaining_time, 0.01)
+
             # ensure same client
             if addr != conn_info.get_addr():
                 continue
             packet = parse_rush_packet(data)
+            if not packet:
+                continue
             # ensure the sequence number matches what we have on file
             if packet.seq_num != conn_info.client_seq:
                 continue
@@ -128,15 +140,18 @@ def send_and_listen_packet(conn_info, content):
             if not (packet.get_flag(RushPacket.ACK)
                     and packet.get_flag(RushPacket.DAT)):
                 # check for NAK
-                if packet.get_flag(RushPacket.NAK):
+                if packet.get_flag(RushPacket.NAK) \
+                        and packet.get_flag(RushPacket.DAT):
                     # if so send sock.sendto again and update client seq
                     conn_info.get_sock() \
                         .sendto(payload, conn_info.get_addr())
                     conn_info.client_seq += 1
+                    remaining_time = conn_info.timeout
                 continue
             break
         except socket.timeout:
             # If 3 seconds pass resend
+            remaining_time = conn_info.timeout
             conn_info.get_sock().sendto(payload, conn_info.get_addr())
 
 def send_fin(conn_info):
@@ -147,15 +162,23 @@ def send_fin(conn_info):
     payload = header + b''.ljust(conn_info.content_size, b'\x00')
     # send FIN
     conn_info.get_sock().sendto(payload, conn_info.get_addr())
+
     # listen for FIN/ACK header
-    conn_info.get_sock().settimeout(3)
+    remaining_time = conn_info.timeout
     while True:
         try:
+            conn_info.get_sock().settimeout(remaining_time)
+            start_time = time.time()
             data, addr = conn_info.get_sock().recvfrom(conn_info.buffer_size)
+            remaining_time -= time.time() - start_time
+            remaining_time = max(remaining_time, 0.01)
+
             # ensure same client
             if addr != conn_info.get_addr():
                 continue
             packet = parse_rush_packet(data)
+            if not packet:
+                continue
             # ensure the sequence number matches what we have on file
             if packet.seq_num != conn_info.client_seq:
                 continue
@@ -166,18 +189,20 @@ def send_fin(conn_info):
             if not (packet.get_flag(RushPacket.ACK)
                     and packet.get_flag(RushPacket.FIN)):
                 # check for NAK
-                if packet.get_flag(RushPacket.NAK):
+                if packet.get_flag(RushPacket.NAK) \
+                        and packet.get_flag(RushPacket.DAT):
                     # if so send sock.sendto again
                     conn_info.get_sock() \
                         .sendto(payload, conn_info.get_addr())
                     conn_info.client_seq += 1
+                    remaining_time = conn_info.timeout
                 continue
             break
         except socket.timeout:
             # If 3 seconds pass resend
+            remaining_time = conn_info.timeout
             conn_info.get_sock().sendto(payload, conn_info.get_addr())
     conn_info.server_seq += 1
-    conn_info.client_seq += 1
     # send your own FIN/ACK 
     header = create_header(conn_info, RushPacket.FIN|RushPacket.ACK)
     payload = header + b''.ljust(conn_info.content_size, b'\x00')
@@ -192,6 +217,7 @@ def main(conn_info):
     conn_info.add_sock(sock)
     conn_info.port = sock.getsockname()[1]
     print(conn_info.port)
+    sys.stdout.flush()
     # listen for GET requests
     get_packet = ""
     while True:
@@ -201,6 +227,7 @@ def main(conn_info):
             get_packet = parse_GET(data)
             if get_packet:
                 conn_info.add_addr(addr)
+                conn_info.client_seq += 1
                 break;
     
     # get file
