@@ -11,11 +11,14 @@ Created on Tue Jan 15 12:21:17 2019
 import numpy as np
 from scipy import signal
 
+# need regex
+import re
+
 class GameOfLife:
     '''
     Object for computing Conway's Game of Life (GoL) cellular machine/automata
     '''
-    def __init__(self, N=256, finite=False, fastMode=False):
+    def __init__(self, N=256, finite=False, fastMode=False, fileName=None):
         self.grid = np.zeros((N,N), np.uint)
         self.neighborhood = np.ones((3,3), np.uint) # 8 connected kernel
         self.neighborhood[1,1] = 0 #do not count centre pixel
@@ -23,6 +26,8 @@ class GameOfLife:
         self.fastMode = fastMode
         self.aliveValue = 1
         self.deadValue = 0
+        if fileName:
+            self.insertRLE(fileName, (0,0))
         
     def getStates(self):
         '''
@@ -51,10 +56,58 @@ class GameOfLife:
         
         #implement the GoL rules by thresholding the weights
         #PART A CODE HERE
+<<<<<<< HEAD
         self.grid[
+=======
+        newGrid = np.zeros(self.grid.shape, np.uint)
+        neighbours = signal.convolve2d(self.grid, self.neighborhood, mode="same", fillvalue=self.deadValue)
+        for x, y in np.ndindex(self.grid.shape):
+            alive = self.grid[x, y] == self.aliveValue
+            numNeighbours = neighbours[x, y]
+            if alive:
+                if 2 <= numNeighbours <= 3:
+                    newGrid[x, y] = self.aliveValue
+                else:
+                    newGrid[x, y] = self.deadValue
+            else:
+                if numNeighbours == 3:
+                    newGrid[x, y] = self.aliveValue
+                else:
+                    newGrid[x, y] = self.deadValue
+>>>>>>> 7254282c58cd43c191d5a594f07bfd4daa1a13fb
         
-        #update the grid
-#        self.grid = #UNCOMMENT THIS WITH YOUR UPDATED GRID
+        self.grid = newGrid
+
+    def insertRLE(self, fileName, index=(0,0)):
+        with open(fileName, 'r') as f:
+            content = f.readlines()
+        # ignore hash lines
+        head = '#'
+        tail = content
+        print("content:", content)
+        while head[0] == '#':
+            print(head)
+            head, *tail = tail
+        # now we have the "header" as the head
+        # header doesn't do anything
+        codeLines = ''.join(tail).split('$')
+        multiplier = 1
+        x = 0
+        y = 0
+        for line in codeLines:
+            print("Line:", line)
+            operations = re.findall(r'[A-Za-z]|-?\d+\.\d+|\d+|[\w\s]', line)
+            for op in operations:
+                print("op:", op)
+                if op.isdigit():
+                    multiplier = int(op)
+                else:
+                    for x in range(x, x+multiplier):
+                        self.grid[index[0]+x, index[1]+y] = self.aliveValue
+                    multiplier = 1
+            x = 0
+            y += 1
+
     
     def insertBlinker(self, index=(0,0)):
         '''
