@@ -44,12 +44,14 @@ class GameOfLife:
         - Any live cell with more than three live neighbors dies, as if by overpopulation.
         - Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction
         '''
+        newGrid = self.getGrid()
                     
         #get weighted sum of neighbors
         #PART A & E CODE HERE
         
         #implement the GoL rules by thresholding the weights
         #PART A CODE HERE
+        self.grid[
         
         #update the grid
 #        self.grid = #UNCOMMENT THIS WITH YOUR UPDATED GRID
