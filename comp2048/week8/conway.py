@@ -49,12 +49,16 @@ class GameOfLife:
         - Any live cell with more than three live neighbors dies, as if by overpopulation.
         - Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction
         '''
+        newGrid = self.getGrid()
                     
         #get weighted sum of neighbors
         #PART A & E CODE HERE
         
         #implement the GoL rules by thresholding the weights
         #PART A CODE HERE
+<<<<<<< HEAD
+        self.grid[
+=======
         newGrid = np.zeros(self.grid.shape, np.uint)
         neighbours = signal.convolve2d(self.grid, self.neighborhood, mode="same", fillvalue=self.deadValue)
         for x, y in np.ndindex(self.grid.shape):
@@ -70,6 +74,7 @@ class GameOfLife:
                     newGrid[x, y] = self.aliveValue
                 else:
                     newGrid[x, y] = self.deadValue
+>>>>>>> 7254282c58cd43c191d5a594f07bfd4daa1a13fb
         
         self.grid = newGrid
 
