@@ -8,149 +8,40 @@
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
 
-\title{Assignment 2}
+\title{Assignment 3}
 \author{Joshua Hwang (44302650)}
-\date{8 April}
+\date{6 May}
 
 \begin{document}
 \maketitle
-\section{Show the limit}
-Given $f(x) = 2x^2 + 5$ show,
+
+\section{Show that $f$ is differntiable at 0}
 \begin{align*}
-    \lim_{x \to 1} f(x) &= 7
+    f(x)
+    &=
+    \begin{cases}
+        x^2 & \text{$x$ is rational} \\
+        0 & \text{otherwise}
+    \end{cases}
 \end{align*}
 
-If the limit is 7 then for all $\epsilon > |f(x) - 7|$
-there exists $\delta > 0$ such that $\delta > |x - 1|$.
+the differential exists (with respect to limits)
+think we can use squeeze theorem to get the limits just right
 
-\begin{align*}
-    \epsilon &> |f(x) - 7| \\
-    &= |2x^2 + 5 - 7| \\
-    &= |2x^2 - 2| \\
-    &= 2|x-1||x+1| \\
-\end{align*}
+\section{Show Lipschitz continuous iff $f'$ is bounded}
+I have no idea
 
-Try $\delta_1 = 1$ so,
-\begin{align*}
-    \delta &> |x - 1| \\
-    1 &> |x - 1| &> |x| - 1 && \text{reverse triangle inequality} \\
-    2 &> |x| \\
-\end{align*}
+\section{Use lower and upper sums to show integrable}
+Should be a simple application of lecture theorem
 
-So 
-\begin{align*}
-    2|x-1||x+1| &\leq 2|x-1|(|x|+|1|) &&\text{triangle inequality} \\
-    &< 2|x-1|(2+|1|) \\
-    &< 6|x-1| \\
-\end{align*}
+\section{Show mean value theorem of integrals}
+I don't really know
+might take a look at the lecture notes and modify???
 
-Now we choose $\delta_2 = \frac{\epsilon}{6}$. Thus our final choice of delta
-is $\delta = min\{1, \frac{\epsilon}{6}\}$. We now verify our results.
-\begin{align*}
-    |2x^2 + 5 - 7| &= 2|x-1||x+1| \\
-    &< 2\delta|x+1| && \delta > |x-1| \\
-    &= 2\delta|(x-1)+2| \\
-    &< 2\delta|1+2| && 1 \geq \delta > |x-1| \\
-    &< 6\delta \\
-    &< \epsilon && \delta \leq \frac{\epsilon}{6}
-\end{align*}
+\section{Show $f(x) = 0$}
+Should be pretty simple as far as I'm aware
 
-We have been able to contruct a delta for any given $\epsilon$. Therefore
-the limit holds.
-
-\section{Show absolute of function is continuous}
-Knowing $f(x)$ is continuous we have for any $\epsilon > |f(x) - f(c)|$ there
-exists a $\delta > |x - c|$. Using the reverse triange inequality we get
-\begin{align*}
-    ||f(x)| - |f(c)|| &\leq |f(x) - f(c)| < \epsilon \\
-    ||f(x)| - |f(c)|| &< \epsilon \\
-\end{align*}
-
-Thus the $\delta$ that exists for $f(x)$ is equally valid for $F(x)$ thus it is
-continuous.
-
-\section{There exists an interval that is positive}
-Since $f(x)$ is continuous at $a$ then by definition we have for all
-$|f(x) - f(a)| < \epsilon$ there will exist a $\delta < |x-a|$. We choose
-$\epsilon = f(a)$ so the range of $f(x)$ is now $(f(a) - f(a), f(a) + f(a))
-= (0, 2f(a))$. Which is a positive range. For such an epsilon we know there
-exists a $\delta$.
-
-\section{Continuity of functions}
-We know all polynomials are continuous and we know $\log x$ is continuous.
-When we add two continuous functions we produce another continuous function.
-Now we convert our problem to use IVT. Let $g(x) = f(x) - 3$ so if there exists
-and $x$ where $g(x) = 0$ we will find $f(x) = 3$.
-
-\begin{align*}
-    g(x) &= 0 \\
-    f(x) - 3 &= 0 \\
-    f(x) &= 3 \\
-\end{align*}
-
-Using a calculator we try $g(0.5) = \frac{1}{64} - \log(2) - 3$ which is less
-than 0. Now take $g(1.5) = \frac{729}{64} + \log\left(\frac{3}{2}\right) - 3$
-which is greater than 0. Since $g(x)$ is a sum of continuous functions it is
-continuous and the IVT can be applied. There is a point which is greater than 0
-and a point less than 0 thus there exists a point where it is 0. Therefore,
-there is a point, $x$, where $x^6 + \log(x) = 3$.
-
-\section{Fixed point}
-We use the same technique as before. Construct $g(x) = f(x) - x$ so when
-$g(x) = 0 \to f(x) = x$. Since $f(x)$ is continuous, $g(x)$ is also continuous.
-
-Try $g(0)$.
-Since the domain and range of $f(x)$ is $[0,1]$, $f(x) \geq 0$.
-If $f(0) = 0$ we're done thus our only interesting option is $f(0) > 0$.
-Thus $g(0) \geq 0$.
-Now try $g(1)$
-Since the domain and range of $f(x)$ is $[0,1]$, $f(x) \leq 1$.
-If $f(1) = 1$ we're done thus our only interesting option is $f(1) < 1$.
-Thus $g(1) \leq 0$.
-
-We now apply IVT to show there exists $g(x) = 0$ which means $f(x) = x$.
-
-\section{Restricted function}
-Counter example, $f(x) = \left|\frac{1}{0.5 + x}\right|$.
-We show it is bounded on the integers but unbounded on the reals.
-
-Since the function is absolute it is bounded below by 0. It is also monotone
-increasing until it hits 0 then is monotone decreasing. We first try to show
-the monotone increasing to 0. For clarity let $a = -x$
-\begin{align*}
-    f(x) &\leq f(x+1) && x < 0 \\
-    f(-a) &\leq f(-a+1) && a > 0 \\
-    \left|\frac{1}{0.5 - a}\right| &\leq \left|\frac{1}{0.5 - a + 1}\right| \\
-    \left|\frac{1}{0.5 - a}\right| &\leq \left|\frac{1}{1.5 - a}\right| \\
-    \frac{1}{\left|0.5 - a\right|} &\leq \frac{1}{\left|1.5 - a\right|} \\
-    \left|0.5 - a\right| &\geq \left|1.5 - a\right| \\
-    \left|a - 0.5\right| &\geq \left|a - 1.5\right| \\
-\end{align*}
-
-Since $a > 0$, the inequality holds. For $x < 0$ the function is monotone
-increasing. A finite monotone increasing function will have it's upper bound
-as its final answer. In this case it is $x=-1$ so $f(-1) = 2$.
-
-The other side is monotone decreasing as we will demonstrate.
-\begin{align*}
-    f(x) &\geq f(x+1) && x \geq 0 \\
-    \left|\frac{1}{0.5 + x}\right| &\geq \left|\frac{1}{0.5 + x + 1}\right| \\
-    \frac{1}{\left|0.5 + x\right|} &\geq \frac{1}{\left|0.5 + x + 1\right|} \\
-    \left|0.5 + x\right| &\leq \left|0.5 + x + 1\right| \\
-    \left|0.5 + x\right| &\leq \left|1.5 + x\right| \\
-\end{align*}
-
-Since $x \geq 0$, the inequality holds. For $x \geq 0$ the function is monotone
-decreasing. Recall the function is absolute so it is bounded below by 0 and
-it's maximum value is the first possible answer. In this case it is $x=0$
-so $f(0) = 2$. 
-
-Thus we have a lower bound and upper bound that exist for this function
-restricted to the integers. We now show such limits do not exist in the reals.
-
-Assume there exists an upper bound $L$. Choose $x = \frac{1}{L + 1} - 0.5$ so
-$f\left(\frac{1}{L+1} - 0.5\right) = L+1$ which is higher
-than the upper bound.
-Therefore there is no upper bound and it's unbounded over $\mathbb{R}$.
+\section{Show there exists $f(c) = g(c)$}
+Create a new function f(x) - g(x) = h(x). Maybe find something???
 
 \end{document}
