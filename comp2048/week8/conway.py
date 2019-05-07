@@ -56,9 +56,7 @@ class GameOfLife:
         
         #implement the GoL rules by thresholding the weights
         #PART A CODE HERE
-<<<<<<< HEAD
-        self.grid[
-=======
+
         newGrid = np.zeros(self.grid.shape, np.uint)
         neighbours = signal.convolve2d(self.grid, self.neighborhood, mode="same", fillvalue=self.deadValue)
         for x, y in np.ndindex(self.grid.shape):
@@ -74,8 +72,6 @@ class GameOfLife:
                     newGrid[x, y] = self.aliveValue
                 else:
                     newGrid[x, y] = self.deadValue
->>>>>>> 7254282c58cd43c191d5a594f07bfd4daa1a13fb
-        
         self.grid = newGrid
 
     def insertRLE(self, fileName, index=(0,0)):
