@@ -25,24 +25,127 @@
     \end{cases}
 \end{align*}
 
-To show it is differentiable
-the differential exists (with respect to limits)
-think we can use squeeze theorem to get the limits just right
+To show it is differentiable we must show the following exists,
+\begin{align*}
+    \lim_{x \to 0} \frac{f(x) - f(0)}{x - 0}
+    &= \lim_{x \to 0} \frac{f(x)}{x}
+\end{align*}
+
+We consider both $f(x) = 0$ and $f(x) = x^2$. First $f(x) = 0$.
+\begin{align*}
+    \lim_{x \to 0} \frac{f(x)}{x} &= \lim_{x \to 0} \frac{0}{x} \\
+    &= 0 \\
+\end{align*}
+
+This is fine since ALL points $x$ close to 0 have the expression evaluate to
+$\frac{0}{x} \to 0$. By definition of limit,
+\begin{align*}
+0 < |x - 0| < \delta \\
+x \neq 0
+\end{align*}
+
+Now consider $f(x) = x^2$.
+\begin{align*}
+    \lim_{x \to 0} \frac{f(x)}{x} &= \lim_{x \to 0} \frac{x^2}{x} \\
+    &= \lim_{x \to 0} x \\
+    &=  0
+\end{align*}
+
+Both possiblities have been explored and evaluate to the same answer. Since
+$f'(x)$ exists the function is differentiable.
+
+ZZZ - this is not a good proof
 
 \section{Show Lipschitz continuous iff $f'$ is bounded}
-I have no idea
+First suppose $f$ is Lipschitz continuous.
+\begin{align*}
+    |f(x) - f(y)| &\leq C|x - y|
+\end{align*}
+
+\begin{align*}
+    |f'(x)| &= \lim_{x \to y} \frac{|f(x) - f(y)|}{|x - y|} \\
+    &\leq \lim_{x \to y} \frac{C|x - y|}{|x - y|} \\
+    &= C \\
+\end{align*}
+
+Thus our function is bounded.
+
+Now suppose $f'$ is bounded by $L$, $|f'| \leq L$.
+We may apply the Mean Value Thereom in this scenario since our function is
+differentiable. By the Mean Value Thereom we have for all $a$ and $b$,
+\begin{align*}
+    f(b) - f(a) &= f'(c)(b - a) \\
+    |f(b) - f(a)| &= |f'(c)||b - a| \\
+    |f(b) - f(a)| &\leq L|b - a| \\
+\end{align*}
+
+Which is the defintion of Lipschitz continuous.
 
 \section{Use lower and upper sums to show integrable}
-Should be a simple application of lecture theorem
+First observe our function is monotone increasing.
+Thus we produce the following expressions for the lower sum and upper sum,
+\begin{align*}
+    \sum_i^n f\left(\frac{i - 1}{n}\right) \times \frac{1}{n}
+    &= \frac{1}{n^2} \sum_i^n i-1 && \text{Lower sum} \\
+    &= \frac{1}{n^2} \frac{(n-1)n}{2} \\
+    &= \frac{1}{2} - \frac{1}{2n} \\
+
+    \sum_i^n f\left(\frac{i}{n}\right) \times \frac{1}{n}
+    &= \frac{1}{n^2} \sum_i^n i && \text{Upper sum} \\
+    &= \frac{1}{n^2} \frac{n(n+1)}{2} \\
+    &= \frac{1}{2} + \frac{1}{2n} \\
+\end{align*}
+
+Now we prove it's integrable,
+\begin{align*}
+    U(P,f) - L(P,f) &< \epsilon \\
+    \frac{1}{2} + \frac{1}{2n} - \left(\frac{1}{2} - \frac{1}{2n}\right)
+    &< \epsilon \\
+    \frac{2}{2n} &< \epsilon \\
+    \frac{1}{n} &< \epsilon \\
+\end{align*}
+
+Thus choosing $n = \frac{2}{\epsilon}$ will give a partition that satisfies
+the equation.
 
 \section{Show mean value theorem of integrals}
-I don't really know
-might take a look at the lecture notes and modify???
+By Fundamental Theorem of Calculus we may construct $F(x) = \int_a^x f$ and
+$F'(x) = f(x)$. We now use the Mean Value Theorem since $F$ is differentiable.
+\begin{align*}
+    \frac{F(b) - F(a)}{b - a} &= F'(c) \\
+    F(b) - F(a) &= F'(c)(b - a) \\
+    F(b) - F(a) &= F'(c)(b - a) \\
+    \int_a^b f &= f(c)(b - a) && \text{QED}
+\end{align*}
 
 \section{Show $f(x) = 0$}
-Should be pretty simple as far as I'm aware
+Suppose $\int_a^b f = 0$ but $\exists c$ such that $f(c) > 0$,
+(also note $f(x) \geq 0$). From the
+previous assignment we've proven that if $f(c) > 0$ then there exists an
+interval where the function is greater than 0, $(e, f)$.
+
+From here we make use of the additivity property of the integral.
+\begin{align*}
+    \int_a^b f &= \int_a^e f + \int_e^f f + \int_f^b f \\
+    &= 0 + \int_e^f f + 0 \\
+    &= 0 + f(g)(f-e) + 0
+    && \text{From the previous question we know $g$ exists} \\
+    &> 0
+\end{align*}
+
+But we initially stated $\int_a^b f = 0$ which leads to a contradiction. We
+cannot have any point $c$ such that $f(c) > 0$. Thus $f(x) = 0$.
 
 \section{Show there exists $f(c) = g(c)$}
-Create a new function f(x) - g(x) = h(x). Maybe find something???
+First we note $a \neq b$ since $[a,b]$ is an interval.
+Let $H(x) = f - g$ from Q4 we have,
+\begin{align*}
+    \int_a^b f - g &= 0 \\
+    \int_a^b H &= 0 \\
+    H(c)(b - a) &= 0 && \text{There exists a $c$ where this holds} \\
+    (f(c) - g(c))(b - a) &= 0 && \text{$b - a \neq 0$} \\
+    f(c) - g(c) &= 0 \\
+    f(c) &= g(c) \\
+\end{align*}
 
 \end{document}
