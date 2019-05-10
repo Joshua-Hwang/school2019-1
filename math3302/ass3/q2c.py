@@ -58,3 +58,4 @@ for a in distances[1:]:
   ans = gcd(ans, a)
 
 print(ans)
+print("len(msg)",len(msg))
