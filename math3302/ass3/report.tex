@@ -302,12 +302,12 @@ We first let $s = x^3$ thus our equations can become,
 
 From here we can perform the Chinese Remainder Theorem.
 \begin{align*}
-    s &= a_1\times(m_2\times m_3)y_1
-    + a_2\times(m_1\time m_3)y_2
-    + a_3\times(m_1\times m_2)y_3 \bmod m_1 \times m_2 \times m_3 \\
-    s &= 42710\times(48721\times44767)y_1
-    + 15083\times(43807\times44767)y_2
-    + 40156\times(43807\times48721)y_3
+    s &= a_1 (m_2 \times m_3) y_1 \\
+      &+ a_2 (m_1 \times m_3) y_2 \\
+      &+ a_3 (m_1 \times m_2) y_3 \bmod (m_1 \times m_2 \times m_3) \\
+    s &= 42710 (48721 \times 44767) y_1 \\
+      &+ 15083 (43807 \times 44767) y_2 \\
+      &+ 40156 (43807 \times 48721) y_3 \bmod (43807 \times 48721 \times 44767)
 \end{align*}
 
 Where $y_i$ is $(\prod_{n \neq i} m_n)^{-1} \bmod m_i$.
