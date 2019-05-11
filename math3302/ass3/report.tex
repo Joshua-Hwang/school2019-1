@@ -220,9 +220,197 @@ WOCGIVASEWWETASOMCGLWIZREKNFRWGYTEIFVVSMUMWBRXKSAG
 ZVCBOWKM
 \end{verbatim}
 
-Kasiski's test was completed with a Python program.
-\verbatiminput{q2c.py}
+Kasiski's test was completed with a Python program. The comments of the program
+should explain the process.
+\verbatiminput{q2c_1.py}
 
-If we were to use all distances, we would be grabbing 
+If we were to use all distances, we would end up selecting information that
+randomly coincided. Thus instead of looking for the greatest common factor
+between all distances, we attempt to find the greatest (most) common factor.
+We did this by slowing checking how many distances had a 3,4 then
+5 as a common factor. This could be extended to 6,7,8, etc.
+\begin{verbatim}
+Factor:Frequency
+3 : 4
+4 : 3
+5 : 14
+\end{verbatim}
+
+We also explore using quadgrams and quartgrams but we could
+not conclude anything interesting from this, not enough n-grams available.
+
+We now employ Friedman's first method.
+ZZZ - explicitly run through each m
+We now check the index of coincidence from the helpful table provided in
+my text file. For $m=5$ we get 0.065, 0.065, 0.064, 0.061 and 0.065. This
+fits very well with the English language index of 0.065.
+
+Friedman's second method is given by,
+\begin{align*}
+    m &\approx \frac{n(I_l - I_0)}{(n-1)I_T - nI_0 + I_l}
+    &= \frac{1058(0.0667 - 0.0385)}{(1058-1)46488 - (1058)0.0385 + 0.0667}
+    &= 9.1856
+\end{align*}
+
+This method seems to suggest a key length of 9. Of course we know
+from external information this could not be possible (highest key length is 5).
+Thus we must chalk this up to a failure in approximation, with more data
+Friedman's second method would work much better.
+
+\subsubsection{Decrypt}
+From here we perform frequency analysis on each segment of the cipher text.
+Those encoded with the first letter of the key, second letter, etc.
+\verbatiminput{q2c_2.py}
+
+Our resulting guess came out to be \texttt{ftone} which was not the actual key.
+Analysing those decoded with the \texttt{tone} part of our key actually showed
+common parts of words which lead us to the conclusion the \texttt{f} was
+incorrectly guessed. From here we bruteforce each possible first letter to
+arrive at \texttt{stone} which properly decoded the message.
+\begin{verbatim}
+thateveningateightthirtyexquisitelydressedandweari
+ngalargebuttonholeofparmavioletsdoriangraywasusher
+edintoladynarboroughsdrawingroombybowingservantshi
+sforeheadwasthrobbingwithmaddenednervesandhefeltwi
+ldlyexcitedbuthismannerashebentoverhishostessshand
+wasaseasyandgracefulaseverperhapsoneneverseemssomu
+chatoneseaseaswhenonehastoplayapartcertainlynoonel
+ookingatdoriangraythatnightcouldhavebelievedthathe
+hadpassedthroughatragedyashorribleasanytragedyofou
+ragethosefinelyshapedfingerscouldneverhaveclutched
+aknifeforsinnorthosesmilinglipshavecriedoutongodan
+dgoodnesshehimselfcouldnothelpwonderingatthecalmof
+hisdemeanourandforamomentfeltkeenlytheterribleplea
+sureofadoublelifeitwasasmallpartygotupratherinahur
+rybyladynarboroughwhowasaverycleverwomanwithwhatlo
+rdhenryusedtodescribeastheremainsofreallyremarkabl
+euglinessshehadprovedanexcellentwifetooneofourmost
+tediousambassadorsandhavingburiedherhusbandproperl
+yinamarblemausoleumwhichshehadherselfdesignedandma
+rriedoffherdaughterstosomerichratherelderlymenshed
+evotedherselfnowtothepleasuresoffrenchfictionfrenc
+hcookery
+\end{verbatim}
+
+\section{RSA and Chinese Remainder Theorem}
+We first let $s = x^3$ thus our equations can become,
+\begin{align*}
+    s &= 42710 \bmod 43807 \\
+    s &= 15083 \bmod 48721 \\
+    s &= 40156 \bmod 44767 \\
+\end{align*}
+
+From here we can perform the Chinese Remainder Theorem.
+\begin{align*}
+    s &= a_1\times(m_2\times m_3)y_1
+    + a_2\times(m_1\time m_3)y_2
+    + a_3\times(m_1\times m_2)y_3 \bmod m_1 \times m_2 \times m_3 \\
+    s &= 42710\times(48721\times44767)y_1
+    + 15083\times(43807\times44767)y_2
+    + 40156\times(43807\times48721)y_3
+\end{align*}
+
+Where $y_i$ is $(\prod_{n \neq i} m_n)^{-1} \bmod m_i$.
+
+Since these are very large numbers a Python program was written to complete
+this.
+\verbatiminput{q3.py}
+
+The $y$s were calculated with a Python program but have been copied below.
+\begin{align*}
+    m_1 &= 2181093007 \\
+    m_2 &= 1961107969 \\
+    m_3 &= 2134320847 \\
+    m &= 95547141357649 \\
+    \text{Finding inverse of 2181093007 and 43807} \\
+    1 &= 1 \times 1 + 22 \times 0 \\
+    1 &= 22 \times -6 + 133 \times 1 \\
+    1 &= 133 \times 19 + 421 \times -6 \\
+    1 &= 421 \times -120 + 2659 \times 19 \\
+    1 &= 2659 \times 619 + 13716 \times -120 \\
+    1 &= 13716 \times -1358 + 30091 \times 619 \\
+    1 &= 30091 \times 1977 + 43807 \times -1358 \\
+    1 &= 43807 \times -98432234 + 2181093007 \times 1977 \\
+    1 &= 2181093007 \times 1977 + 43807 \times -98432234 \\
+    \text{Found inverse 1977} \\
+    y_1 &= 1977 \\
+    \text{Finding inverse of 1961107969 and 48721} \\
+    1 &= 1 \times 1 + 9 \times 0 \\
+    1 &= 9 \times -1 + 10 \times 1 \\
+    1 &= 10 \times 2 + 19 \times -1 \\
+    1 &= 19 \times -3 + 29 \times 2 \\
+    1 &= 29 \times 8 + 77 \times -3 \\
+    1 &= 77 \times -11 + 106 \times 8 \\
+    1 &= 106 \times 1009 + 9723 \times -11 \\
+    1 &= 9723 \times -4047 + 38998 \times 1009 \\
+    1 &= 38998 \times 5056 + 48721 \times -4047 \\
+    1 &= 48721 \times -203513103 + 1961107969 \times 5056 \\
+    1 &= 1961107969 \times 5056 + 48721 \times -203513103 \\
+    \text{Found inverse 5056} \\
+    y_2 &= 5056 \\
+    \text{Finding inverse of 2134320847 and 44767} \\
+    1 &= 1 \times 1 + 6 \times 0 \\
+    1 &= 6 \times -1 + 7 \times 1 \\
+    1 &= 7 \times 3 + 20 \times -1 \\
+    1 &= 20 \times -4 + 27 \times 3 \\
+    1 &= 27 \times 7 + 47 \times -4 \\
+    1 &= 47 \times -95 + 638 \times 7 \\
+    1 &= 638 \times 102 + 685 \times -95 \\
+    1 &= 685 \times -197 + 1323 \times 102 \\
+    1 &= 1323 \times 299 + 2008 \times -197 \\
+    1 &= 2008 \times -1094 + 7347 \times 299 \\
+    1 &= 7347 \times 1393 + 9355 \times -1094 \\
+    1 &= 9355 \times -6666 + 44767 \times 1393 \\
+    1 &= 44767 \times 317809609 + 2134320847 \times -6666 \\
+    1 &= 2134320847 \times -6666 + 44767 \times 317809609 \\
+    \text{Found inverse -6666} \\
+    y_3 &= -6666 \\
+    s &= 30773171189753 \\
+    x &= 31337
+\end{align*}
+
+The Chinese Remainder Theorem gives the unique solution (equivalence class)
+for our system. Thus we can be confident in this solution for $s$.
+The cube root of our solution was done in the expected way.
+ZZZ - we recognise their are potentially many solutions to the cube root.
+ZZZ - we are only focussing on the simplest case which is a straight cube root.
+
+Thus our final plaintext is $\sqrt[3]{s} = 31337$.
+
+\section{Linear feedback shift}
+Our recurrence relation is,
+\begin{align*}
+    l_{i+5} &= l_{i+4} + l_{i+3} + l_{i+2} + l_{i+1} + l_{i}
+\end{align*}
+
+\subsection{Prove $l_j+l_{j+2}+l_{j+4}$ is constant no matter $j$}
+We shall prove this through induction. First consider the base case.
+\begin{align*}
+    l_0 + l_2 + l_4 &= l_1 + l_3 + l_5 \\
+    l_0 + l_2 + l_4 &= l_1 + l_3 + l_4 + l_3 + l_2 + l_1 + l_0 \\
+    l_0 + l_2 + l_4 &= l_4 + l_2 + l_0
+    && \text{Addition and subtraction are equal in binary} \\
+    \text{LHS} &= \text{RHS}
+\end{align*}
+
+Let $L_j = l_{j+4} + l_{j+2} + l_{j}$ and 
+$L_{j+1} = l_{j+5} + l_{j+3} + l_{j+1}$
+
+Now we assume for all $j \leq k$ we have $L_j = L_k$
+
+Finally we check that $L_{k+1} = L_k$.
+Observe,
+\begin{align*}
+    l_{k+5} &= l_{k+4} + l_{k+3} + l_{k+2} + l_{k+1} + l_{k} \\
+    l_{k+5} - l_{k+3} - l_{k+1} &= l_{k+4} + l_{k+2} + l_{k} \\
+    l_{k+5} + l_{k+3} + l_{k+1} &= l_{k+4} + l_{k+2} + l_{k} \\
+    && \text{Addition and subtraction are equal in binary} \\
+    L_{k+1} &= L_{k}
+\end{align*}
+
+Thus we have proven $l_j+l_{j+2}+l_{j+4}$ is constant no matter $j$.
+
+\subsection{Show we only have $2^4$ distinct values}
+
 
 \end{document}
