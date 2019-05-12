@@ -22,8 +22,41 @@
 
 \section{Hill cipher}
 \subsection{Find inverse}
+We first show the standard inverse for $2\times2$ matrices works in modular
+arithmetic. Consider $a$, $b$, $c$, $d$ to be equivalence classes in
+$\mathbb{Z}_m^*$ (those with multiplicative inverses).
+We prove this with the definition of an inverse matrix.
+\begin{align*}
+    (ad-bc)^{-1}
+    \begin{bmatrix}
+        d & -b \\
+        -c & a
+    \end{bmatrix}
+    \begin{bmatrix}
+        a & b \\
+        c & d
+    \end{bmatrix}
+    &=
+    (ad-bc)^{-1}
+    \begin{bmatrix}
+        ad-bc & 0 \\
+        0 & ad-bc
+    \end{bmatrix} \\
+    &=
+    \begin{bmatrix}
+        1 & 0 \\
+        0 & 1
+    \end{bmatrix}
+\end{align*}
+
+The inverse is also unique. Consider the right inverse $Ar=I$ and the left
+inverse $lA=I$.
+\begin{equation}
+    l = l(Ar) = r
+\end{equation}
+
 We attempt to find $K^{-1}$ through the standard form of the $2\times2$
-matrix. ZZZ - we must prove why this works in our ring.
+matrix.
 \begin{align*}
     (ad-bc)^{-1}
     \begin{bmatrix}
@@ -240,9 +273,36 @@ We also explore using quadgrams and quartgrams but we could
 not conclude anything interesting from this, not enough n-grams available.
 
 We now employ Friedman's first method.
-ZZZ - explicitly run through each m
-We now check the index of coincidence from the helpful table provided in
-my text file. For $m=5$ we get 0.065, 0.065, 0.064, 0.061 and 0.065. This
+Below we run through each $m < 5$. We get the $\sum{f_i(f_i-1)}$ from our
+unique problem sheet.
+\begin{align*}
+    m &= 1 \\
+    n &= 1058 \\
+    I_1 &= \frac{\sum{f_i(f_i-1)}}{n(n-1)} = \frac{46488}{1118306} = 0.0416 \\
+    m &= 2 \\
+    n &= \frac{1058}{2} \\
+    I_1 &= \frac{11380}{279312} = 0.0407 \\
+    I_2 &= 0.0416 \\
+    m &= 3 \\
+    n &= \frac{1058}{3} \\
+    I_1 &= 0.0424 \\
+    I_2 &= 0.0411 \\
+    I_3 &= 0.0405 \\
+    m &= 4 \\
+    n &= \frac{1058}{4} \\
+    I_1 &= 0.0404 \\
+    I_2 &= 0.0448 \\
+    I_3 &= 0.0409 \\
+    I_4 &= 0.0398 \\
+    m &= 5 \\
+    n &= \frac{1058}{4} \\
+    I_1 &= 0.0404 \\
+    I_2 &= 0.0448 \\
+    I_3 &= 0.0409 \\
+    I_4 &= 0.0398 \\
+\end{align*}
+
+For $m=5$ we get 0.065, 0.065, 0.064, 0.061 and 0.065. This
 fits very well with the English language index of 0.065.
 
 Friedman's second method is given by,
@@ -411,6 +471,36 @@ Observe,
 Thus we have proven $l_j+l_{j+2}+l_{j+4}$ is constant no matter $j$.
 
 \subsection{Show we only have $2^4$ distinct values}
+We know that,
+\begin{align*}
+    l_{j+5} &= l_{j+4} + l_{j+3} + l_{j+2} + l_{j+1} + l_{j} \\
+    l_{j+5} + l_{j+3} + l_{j+1} &= l_{j+4} + l_{j+2} + l_{j} \\
+\end{align*}
 
+We choose some sequence from $i$ to $i+4$ of the keystream. 
+\begin{equation}
+    l_{i+4} l_{i+3} l_{i+2} l_{i+1} l_{i} \\
+\end{equation}
+
+We know $l_{i+4} + l_{i+2} + l_{i} = c$ is a constant that is determined by
+$l_{4} + l_{2} + l_{0}$. Thus
+\begin{align*}
+    l_{i+4} &= l_{i+2} + l_{i} + c && \text{Bitwise subtraction is addition} \\
+\end{align*}
+
+Thus we have at most 4 free bits as the final bit is determined by
+$l_{i+2} + l_{i}$. From this it follows we have $2^4$ distinct 5 bit sequences.
+
+\subsection{Period is at most $2^4$}
+Consider a bit in the keystream $l_i$.
+
+From here we observe that
+\begin{align*}
+    l_{i+6} + l_{i+4} + l_{i+2} &= l_{i+4} + l_{i+2} + l_{i} \\
+    l_{i+6} &= l_{i} \\
+\end{align*}
+
+Since this is true for all $i$, we determine our period is at most 6 which
+is less than $2^4$.
 
 \end{document}
