@@ -14,3 +14,7 @@ NumSamples = 1000000
 
 mean = sum(randX() for i in range(NumSamples))/NumSamples
 print("The mean is:",mean)
+
+# find variance for assignment 6
+var = sum((randX() - (72600/130))**2 for i in range(NumSamples))/NumSamples
+print("The variance is:",var)

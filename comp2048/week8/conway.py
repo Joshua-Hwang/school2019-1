@@ -49,8 +49,6 @@ class GameOfLife:
         - Any live cell with more than three live neighbors dies, as if by overpopulation.
         - Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction
         '''
-        newGrid = self.getGrid()
-                    
         #get weighted sum of neighbors
         #PART A & E CODE HERE
         
@@ -58,20 +56,17 @@ class GameOfLife:
         #PART A CODE HERE
 
         newGrid = np.zeros(self.grid.shape, np.uint)
-        neighbours = signal.convolve2d(self.grid, self.neighborhood, mode="same", fillvalue=self.deadValue)
+        neighbours = signal.convolve(self.grid, self.neighborhood, mode="same")
+        print("start")
         for x, y in np.ndindex(self.grid.shape):
-            alive = self.grid[x, y] == self.aliveValue
             numNeighbours = neighbours[x, y]
-            if alive:
-                if 2 <= numNeighbours <= 3:
+            if numNeighbours == 2 or numNeighbours == 3:
+                if self.grid[x, y] == self.aliveValue:
                     newGrid[x, y] = self.aliveValue
-                else:
-                    newGrid[x, y] = self.deadValue
-            else:
-                if numNeighbours == 3:
+                elif numNeighbours == 3:
                     newGrid[x, y] = self.aliveValue
-                else:
-                    newGrid[x, y] = self.deadValue
+
+        print("end")
         self.grid = newGrid
 
     def insertRLE(self, fileName, index=(0,0)):
@@ -91,15 +86,13 @@ class GameOfLife:
         x = 0
         y = 0
         for line in codeLines:
-            print("Line:", line)
             operations = re.findall(r'[A-Za-z]|-?\d+\.\d+|\d+|[\w\s]', line)
             for op in operations:
-                print("op:", op)
                 if op.isdigit():
                     multiplier = int(op)
                 else:
-                    for x in range(x, x+multiplier):
-                        self.grid[index[0]+x, index[1]+y] = self.aliveValue
+                    for x in range(x+1, x+multiplier+1):
+                        self.grid[index[0]+x, index[1]+y] = self.aliveValue if op == 'o' else self.deadValue
                     multiplier = 1
             x = 0
             y += 1
