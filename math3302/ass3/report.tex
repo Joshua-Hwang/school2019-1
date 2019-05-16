@@ -432,8 +432,9 @@ The $y$s were calculated with a Python program but have been copied below.
 The Chinese Remainder Theorem gives the unique solution (equivalence class)
 for our system. Thus we can be confident in this solution for $s$.
 The cube root of our solution was done in the expected way.
-ZZZ - we recognise their are potentially many solutions to the cube root.
-ZZZ - we are only focussing on the simplest case which is a straight cube root.
+We recognise there will be other solution for the cube root but the definition
+of the RSA encoding states our plaintext must be in the domain less than any
+of our modulo's thus $x < min(n1,n2,n3)$.
 
 Thus our final plaintext is $\sqrt[3]{s} = 31337$.
 
