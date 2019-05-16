@@ -17,7 +17,7 @@ NumSamples = 10000
 
 success = 0
 for i in range(NumSamples):
-    if randS() <= 562:
+    if randS() > 600:
         success += 1
 
 print("Approx answer", success/NumSamples)
