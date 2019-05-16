@@ -394,6 +394,8 @@ The $y$s were calculated with a Python program but have been copied below.
     1 &= 2181093007 \times 1977 + 43807 \times -98432234 \\
     \text{Found inverse 1977} \\
     y_1 &= 1977 \\
+\end{align*}
+\begin{align*}
     \text{Finding inverse of 1961107969 mod 48721} \\
     1 &= 1 \times 1 + 9 \times 0 \\
     1 &= 9 \times -1 + 10 \times 1 \\
@@ -408,6 +410,8 @@ The $y$s were calculated with a Python program but have been copied below.
     1 &= 1961107969 \times 5056 + 48721 \times -203513103 \\
     \text{Found inverse 5056} \\
     y_2 &= 5056 \\
+\end{align*}
+\begin{align*}
     \text{Finding inverse of 2134320847 mod 44767} \\
     1 &= 1 \times 1 + 6 \times 0 \\
     1 &= 6 \times -1 + 7 \times 1 \\
@@ -425,17 +429,19 @@ The $y$s were calculated with a Python program but have been copied below.
     1 &= 2134320847 \times -6666 + 44767 \times 317809609 \\
     \text{Found inverse -6666} \\
     y_3 &= -6666 \\
-    s &= 30773171189753 \\
+    s &= 30773171189753 \bmod M \\
     x &= 31337
 \end{align*}
 
 The Chinese Remainder Theorem gives the unique solution (equivalence class)
 for our system. Thus we can be confident in this solution for $s$.
 The cube root of our solution was done in the expected way.
-ZZZ - we recognise their are potentially many solutions to the cube root.
-ZZZ - we are only focussing on the simplest case which is a straight cube root.
-
-Thus our final plaintext is $\sqrt[3]{s} = 31337$.
+We recognise their are potentially many solutions to the cube root.
+But the definition of RSA means our plaintext must exist in the domains
+$\mathbb{Z}_n$. Thus $x < min(n_1, n_2, n_3)$. The maximum possible value for
+$x = min(n_1, n_2, n_3)$ would give a cube that would still not be larger than
+$M$ meaning $x < x^3 < M$. Thus we may remove the modulo leaving us with
+$x^3 = 30773171189753$. Thus our final plaintext is $\sqrt[3]{s} = 31337$.
 
 \section{Linear feedback shift}
 Our recurrence relation is,
