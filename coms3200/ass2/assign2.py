@@ -27,7 +27,6 @@ class ConnectionInfo:
         self._addr = addr
     def get_addr(self):
         return self._addr if hasattr(self, "_addr") else None
-    
 
 class RushPacket:
     ACK = 0b10000000
@@ -41,7 +40,7 @@ class RushPacket:
         self.ack_num = ack_num
         self.flags = flags
         self.payload = payload
-    
+
     def get_flag(self, flag):
         return bool(self.flags & flag)
 
@@ -203,7 +202,7 @@ def send_fin(conn_info):
             remaining_time = conn_info.timeout
             conn_info.get_sock().sendto(payload, conn_info.get_addr())
     conn_info.server_seq += 1
-    # send your own FIN/ACK 
+    # send your own FIN/ACK
     header = create_header(conn_info, RushPacket.FIN|RushPacket.ACK)
     payload = header + b''.ljust(conn_info.content_size, b'\x00')
     conn_info.get_sock().sendto(payload, conn_info.get_addr())
@@ -229,7 +228,7 @@ def main(conn_info):
                 conn_info.add_addr(addr)
                 conn_info.client_seq += 1
                 break;
-    
+
     # get file
     content = b''
     with open(get_packet.payload.decode('utf-8'), 'rb') as content_file:

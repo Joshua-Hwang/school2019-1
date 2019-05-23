@@ -1,0 +1,131 @@
+--------------------------------PART A-----------------------------------------
+
+Note: I say broadcast IP 255.255.255.255 but that will be different in this
+      assignment be vigilant of other such finds.
+
+First question pg 371
+
+1. client searches for DHCP server with a DHCP discover message.
+   UDP sent on port 67
+   destination IP 255.255.255.255
+   source IP 0.0.0.0
+   (This is all fine because of MAC addresses down in link layer)
+
+2. DHCP server receives the message and sends a DHCP offer message that is
+   broadcast to all nodes on the subnet using broadcast (destination) IP
+   255.255.255.255. Note: there may be several DHCP servers on the subnet thus
+   the client may make a discerning choice.
+   Each offer messsage contains: transaction ID of previous discover message,
+   proposed IP address for client, network mask of subnet and IP address lease
+   time (may be hours or even days).
+
+3. Once the client has chosen an IP from the offer messages it will send a
+   DHCP request message with the same configuration parameters as the offer.
+
+4. The DHCP server then responds to the DHCP request message with a DHCP ACK
+   confirming the configuration parameters (copying the configuration sent
+   from the request)
+
+Second question pg 501
+1. Host A sends an ARP packet (which has IP src and dest, MAC src and dest)
+   using the broadcast MAC FF-FF-FF-FF-FF-FF as destination (so all in the
+   subnet will listen). This packet is asking for MAC of gateway.
+   The switch forwards this packet to everyone (I think that's a separate step)
+   and each host checks it's own IP to confirm if it's them.
+2. The gateway will then send back an ARP packet with information of itself
+   and the host. The switch forwards this to the host
+   (it's own ARP now knows Host A)
+3. Host A sends a complete DNS packet to the gateway. Which will eventually
+   reach D2 after crossing subnets.
+4. I'm pretty sure R1 then removes the MAC address and adds a different one.
+
+Third question pg 374
+Should be simple... Host A to R1 then R1 to internet
+Host A using 4001 and R1 is converting that into port 5001
+
+Fourth question pg 375
+In addition to the previous question, Host B is using port 3200 and R1 is
+converting it into (whatever you want here)
+
+Fifth question pg ???
+(Unsure with how broadcast IP and broadcast MAC are both handled, does the
+gateway R1 send that to the internet? Surely not)
+Pretty sure the switch sends to D2 and R1.
+
+Sixth question pg ???
+The server sent a packet with a local IP (192.168.1.2). This IP is not present
+in its subnet thus no one will get that packet. Not to mention S won't be able
+to find a corresponding MAC address.
+
+--------------------------------PART B-----------------------------------------
+First question
+My guess it's 169.254.169.254 for gateway? (it's not, that's a protocol thing)
+My guess it's 10.240.128.1 for gateway (No. 119) and (No. 145) and (No. 381)
+all have external (internet) ip addresses thus they must all pass through the
+gateway which we can find the MAC address of. We then find its ARP responses
+(No. 26) where it tells people its 10.240.128.1.
+
+That is undoubtedly 10.240.129.251 (No. 20) which is sending DHCP offers.
+
+That is undoubtedly 130.102.189.53 (No. 72) which receiving and sending DNS packets .
+
+Second question
+(No. 20) DHCP offers include subnet information.
+Subnet is 255.255.254.0 so the binary rep of this is,
+11111111.11111111.11111110.00000000 thus there are 9 degrees of freedom.
+2^9 = 512 possible addresses.
+
+Third question
+The receiver (Target) is Dell_7c:92:fe using only the first half of the MAC
+address Dell_7c
+
+ARP requests are broadcast but this is an ARP response thus it's unicast,
+sending information to a single destination.
+
+Fourth question
+Pretty sure the SFD (Start Frame Delimiter) isn't present. Not only does it
+not have any useful information, but the hexdump of a packet doesn't show the
+frame header so it's purely recorded by the information window.
+
+The source MAC address is definitely present
+
+So is the destination MAC address
+
+Ethertype is present as well
+
+The payload is what is actually getting sent (the hexdump) so yeah it's there.
+
+The CRC (Cyclic Redundancy Check) is the check at the end of a frame. I can't
+seem to find it.
+
+Fifth question
+Based on the number of pings to 130.102.181.48 that's probably what a traceroute
+is. At (No. 144) we see a DNS response telling our client that learn.uq.edu.au
+is at 130.102.181.48.
+
+Sixth question
+(No. 270) Is the first ping that gets a response from the server. Thus ping
+had a ttl of 12. Thus it takes 12 hops to get to
+learn.uq.edu.au (130.102.181.48).
+
+Seventh question
+(No. 145) this seems to be the start of the traceroute (also did not receive a
+response). This frame has a ttl=1.
+
+Eighth question
+(No. 343) A DNS query gives us a little more information telling us that
+lichen.labs.eait.uq.edu.au is 8.72.102.130 (the in-addr.arpa part is used in
+reverse dns lookups)
+
+Ninth question
+(No. 342) the destination is 130.102.189.53.
+
+Tenth question
+Need to find the windows commands for the following
+DHCP reset/flush/release
+
+DHCP request
+
+ping 104.16.73.45
+
+make a DNS request
