@@ -286,4 +286,140 @@ matrix([[0.05555556, 0.109375  , 0.2193287 , 0.21875   , 0.19849537,
 The answer is 0.19849537
 
 The second answer is 0.1666666666666 which is 1/6
+
+\section{Monte Carlo}
+\subsection{Find pdf of $X$}
+This random variable is equivalent to a binomial distribution with a
+probability $p$ of landing inside the circle. The probability that a single
+point lands in the circle, given any random point in the unit square is
+determined by the proportion of area taken up by a circle (diameter 1)
+in regards to the unit square
+(which is luckily ${}^\pi/_4$ and 1 respectively).
+\[
+    p = \frac{\pi}{4}
+\]
+
+Thus our probability is
+\begin{align*}
+    f(x) = \prob(X=x) &= {}^nC_x p^x (1-p)^{n-x} \\
+    &= {}^nC_x \frac{\pi}{4}^x (1-\frac{\pi}{4})^{n-x}
+\end{align*}
+
+\subsection{Find $4X/n$ for large $n$}
+For large $n$ a binomial distribution approximates a normal distribution
+of the form,
+\[
+    N(np, np(1-p))
+\]
+
+Since we're multiplying our original $X$ by $\frac{4}{n}$ our
+normal distribution approximation will become
+\begin{align*}
+    \frac{4}{n} \times N(n\frac{\pi}{4}, n\frac{\pi}{4}\left(1-\frac{\pi}{4}\right))
+    &= \frac{4}{n} \times \left(n\frac{\pi}{4}
+        + \sqrt{n\frac{\pi}{4}\left(1-\frac{\pi}{4}}\right) N(0, 1))\right) \\
+    &= \pi + \sqrt{\frac{4\pi}{n}\left(1-\frac{\pi}{4}\right)} N(0, 1) \\
+    &= N(\pi, \frac{4\pi}{n}\left(1-\frac{\pi}{4}\right)) \\
+\end{align*}
+
+Thus our approximate distribution is a normal distribution with
+a mean $\pi$ and variance $\frac{4\pi}{n}\left(1-\frac{\pi}{4}\right)$.
+
+\subsection{95\% confidence interval}
+We first create our estimated mean for $\pi$.
+\[
+    4 \times \frac{756}{1000} = 3.024
+\]
+
+It follows that our estimated variance is,
+\begin{align*}
+    \frac{4\pi}{n}\left(1-\frac{\pi}{4}\right)
+    &= \frac{4\times3.024}{n}\left(1-\frac{3.024}{4}\right) \\
+    &= 0.002951 && \text{Four significant figures} \\
+    \sqrt{0.002951} &= 0.05433 && \text{Standard deviation} \\
+\end{align*}
+
+From here we generate our confidence interval,
+\begin{align*}
+    \bar{X} \pm z \frac{S}{\sqrt{n}} &= \bar{\pi} \pm z \frac{0.005118}{\sqrt{1000}} \\
+    &= 3.024 \pm z 0.0001889 \\
+    &= 3.024 \pm 1.96 \times 0.0001889 \\
+    &= 3.024 \pm 0.00037033 \\
+    &= 3.024 \pm 0.0004 && \text{To a single significant figure} \\
+\end{align*}
+
+Note, our confidence interval of 95\% does not contain the actual value
+of $\pi$. This could just be an unlucky trial, given a more generous
+confidence interval we would contain the actual value of $\pi$.
+
+\section{Markov chain}
+We first simplify our recursive relationship,
+\begin{align*}
+    X_{n+1} &= \frac{nX_n + Z_{n+1}}{n+1} \\
+    &= \frac{n\frac{(n-1)X_{n-1} + Z_{n}}{n} + Z_{n+1}}{n+1} \\
+    &= \frac{(n-1)X_{n-1} + Z_{n} + Z_{n+1}}{n+1} \\
+    \vdots \\
+    &= \frac{\text{Stuff}X_{0} + Z_1 + \dots + Z_{n} + Z_{n+1}}{n+1} \\
+    &= \frac{Z_1 + \dots + Z_{n} + Z_{n+1}}{n+1} \\
+\end{align*}
+
+Since we know our initial condition is $X_0 = 0$ we obtain the previously
+stated relationship for each $X$.
+
+\subsection{Find expectation and variance}
+Since
+\[
+    \expect(X + Y) = \expect X + \expect Y
+\]
+from the proofs in the lecture notes,
+we can employ this to find our expectations.
+\begin{align*}
+    \expect X_n &= \expect \frac{Z_1 + \dots + Z_{n}}{n} \\
+    &= \frac{\expect Z_1 + \dots + \expect Z_{n}}{n} \\
+    &= \frac{0}{n} \\
+    &= 0 \\
+\end{align*}
+
+Since
+\[
+    Var(X + Y) = Var(X) + Var(Y) + 2Cov(X,Y)
+\]
+but since $X$ and $Y$ will be independent we will have $Cov(X,Y) = 0$.
+
+\begin{align*}
+    Var(X_n) &= Var\left(\frac{Z_1 + \dots + Z_{n}}{n}\right) \\
+    &= \frac{Var(Z_1) + \dots + Var(Z_{n})}{n^2} \\
+    &= \frac{1 + \dots + 1}{n^2} \\
+    &= \frac{n}{n^2} \\
+    &= \frac{1}{n} \\
+\end{align*}
+
+\subsection{The probability distribution of $X_n$}
+Since each $X_n$ is just a sum of normal random variables (and division by a
+constant) the probability will be a normal distribution with mean of 0 and
+variance $\frac{1}{n}$.
+\[
+    X_n \sim N\left(0, \frac{1}{n}\right)
+\]
+
+\subsection{Find probability}
+As $n \to \infty$ the variance of $X_n$ reduces, $\frac{1}{n}$. When
+variance $\to 0$ the only possible value is the mean which is $0$.
+Thus no other value $X_n > 0$ is possible,
+$\prob (X_n > \epsilon) = 0$.
+
+\subsection{Simulation}
+The code below was run,
+\verbatiminput{q4.py}
+
+and the following outputs were taken,
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5in]{figure1.png}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5in]{figure2.png}
+\end{figure}
+
 \end{document}
