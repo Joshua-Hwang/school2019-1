@@ -23,12 +23,13 @@
 
 \section{Approximate $S_{100}$}
 Using the Central Limit Theorem we can approximate $\prob(S_{100} > 600)$.
-We first note $\prob(S_{100} > x) = 1 - \prob(S_{100} \leq x)$. The left
+We first note $\prob(S_{100} > x) = 1 - \prob(S_{100} \leq x)$. The right
 hand side is much easier to work with so we'll be focussing on
 $\prob(S_{100} \leq x)$.
 \begin{align*}
-    \prob \left( \frac{S_{100} - 100\mu}{\sigma \sqrt{100}} \leq x \right) \\
-    &= \prob \left( S_{100} \leq 10 \sigma x + 100\mu \right) &\approx \Phi(x) \\
+    \prob \left( \frac{S_{100} - 100\mu}{\sigma \sqrt{100}} \leq x \right)
+    &= \prob \left( S_{100} \leq 10 \sigma x + 100\mu \right) \\
+    &\approx \Phi(x) \\
 \end{align*}
 
 We know $\mu = \frac{363}{65} \approx 5.5846$ but we need to find $\sigma$.
@@ -52,8 +53,8 @@ We find this by computing $\expect (X - \expect X)^2$.
 
 Now,
 \begin{align*}
-    \prob \left( \frac{S_{100} - 100\mu}{\sigma \sqrt{100}} \leq x \right) \\
-    &= \prob \left( S_{100} \leq 10 \sigma x + 100\mu \right) &\approx \Phi(x) \\
+    \prob \left( \frac{S_{100} - 100\mu}{\sigma \sqrt{100}} \leq x \right)
+    &= \prob \left( S_{100} \leq 10 \sigma x + 100\mu \right) \\
     &= \prob \left( S_{100} \leq 10 \times 2.2011 x + 100 \times 5.5846 \right) \\
     &= \prob \left( S_{100} \leq 22.011 x + 558.46 \right)
 \end{align*}
@@ -107,7 +108,11 @@ $Z$ is a $3\times1$ column vector of standard normals.
 \end{align*}
 
 \subsection{What is the covariance matrix of $X$}
-ZZZ - Use the $A (Cov) A^T$ but (Cov) is identity because standard normals
+We can look at the following scenario as a multivariate normal distribution
+and use the $B B^T$ but we will instead use the definition of covariance
+(this is mainly because I'm not sure how far in the lectures we've gone
+and don't want to use advanced knowledge).
+
 The covariance matrix defined for the $(i,j)$ element is,
 \begin{align*}
     \text{Cov}(X_i,X_j) & = \expect (X_i - \mu_i)(X_j - \mu_j) \\
@@ -399,15 +404,15 @@ and,
     Y &\leq z - X \\
 \end{align*}
 
-We now use our pdf to integrate over all values that satisfy $Y &\leq z - X$.
+We now use our pdf to integrate over all values that satisfy $Y \leq z - X$.
 \begin{align*}
-    \prob(X+Y \leq z) &= \iint_{Y &\leq z - X} e^{-y} \diff y \diff x
+    \prob(X+Y \leq z) &= \iint_{Y \leq z - X} e^{-y} \diff y \diff x
 \end{align*}
 
 We now have two cases, when $0 \leq z \leq 1$ and $z > 1$.
 We first explore the $0 \leq z \leq 1$ case,
 \begin{align*}
-    \iint_{Y &\leq z - X} e^{-y} \diff y \diff x
+    \iint_{Y \leq z - X} e^{-y} \diff y \diff x
     &= \int_0^z \int_0^{-x+z} e^{-y} \diff y \diff x \\
     &= \int_0^z - \left[ e^{-y} \right]_0^{-x+z} \diff x \\
     &= \int_0^z 1 - e^{x} e^{-z} \diff x \\
@@ -415,7 +420,7 @@ We first explore the $0 \leq z \leq 1$ case,
     &= z + e^{-z} - 1 \\
 \end{align*}
 
-Which we use to find, $\prob(X+Y>z) &= 1 - \prob(X+Y \leq Z)$.
+Which we use to find, $\prob(X+Y>z) = 1 - \prob(X+Y \leq Z)$.
 \begin{align*}
     \prob(X+Y>z) &= 1 - \prob(X+Y \leq Z) \\
     &= 1 - (z + e^{-z} - 1) \\
@@ -424,7 +429,7 @@ Which we use to find, $\prob(X+Y>z) &= 1 - \prob(X+Y \leq Z)$.
 
 Now consider $z > 1$.
 \begin{align*}
-    \iint_{Y &\leq z - X} e^{-y} \diff y \diff x
+    \iint_{Y \leq z - X} e^{-y} \diff y \diff x
     &= \int_0^1 \int_0^{-x+z} e^{-y} \diff y \diff x \\
     &= \int_0^1 - \left[ e^{-y} \right]_0^{z-x}  \diff x \\
     &= \int_0^1 1 - e^{-(z-x)} \diff x \\
@@ -435,7 +440,7 @@ Now consider $z > 1$.
     &= 1 + (1 - e)e^{-z} \\
 \end{align*}
 
-Which we use to find, $\prob(X+Y>z) &= 1 - \prob(X+Y \leq Z)$.
+Which we use to find, $\prob(X+Y>z) = 1 - \prob(X+Y \leq Z)$.
 \begin{align*}
     \prob(X+Y>z) &= 1 - \prob(X+Y \leq Z) \\
     &= 1 - (1 + (1 - e)e^{-z}) \\
@@ -489,26 +494,26 @@ This piecewise function is graphed below,
 \subsection{Find MGF of $X+Y$}
 MGF is defined by,
 \begin{align*}
-    M(s) &= \expect (e^{sZ}) \\
+    M(s) &= \expect e^{sZ} \\
     &= \int_0^\infty f(z) e^{sz} \diff z \\
     &= \int_0^1 f(z) e^{sz} \diff z + \int_1^\infty f(z) e^{sz} \diff z \\
     &= \int_0^1 (1 - e^{-z}) e^{sz} \diff z
-    + \int_1^\infty (e - 1)e^{-z} e^{sz} \diff z \\
+    + \int_1^\infty (e - 1) e^{-z} e^{sz} \diff z \\
     &= \int_0^1 e^{sz} - e^{z(s-1)} \diff z
     + \int_1^\infty (e - 1) e^{(s-1)z} \diff z \\
-    &= \left[ \frac{1]{s} e^{sz} - \frac{1}{s-1} e^{z(s-1)} \right]_0^1
+    &= \left[ \frac{1}{s} e^{sz} - \frac{1}{s-1} e^{z(s-1)} \right]_0^1
     + \left[ \frac{e - 1}{s - 1} e^{(s-1)z} \right]_1^\infty \\
-    &= \frac{1]{s} e^{s} - \frac{1}{s-1} e^{s-1} - \left( \frac{1]{s} - \frac{1}{s-1} \right)
+    &= \frac{1}{s} e^{s} - \frac{1}{s-1} e^{s-1} - \left( \frac{1}{s} - \frac{1}{s-1} \right)
     - \frac{e - 1}{s - 1} e^{s-1} \\
-    && \text{Only when $s < 1$} \\
-    &= \frac{e^{s}]{s} - \frac{e^{s-1}}{s-1} - \frac{1]{s} + \frac{1}{s-1}
+    \text{Only when $s < 1$} \\
+    &= \frac{e^{s}}{s} - \frac{e^{s-1}}{s-1} - \frac{1}{s} + \frac{1}{s-1}
     - \frac{e^{s} - e^{s-1}}{s - 1} \\
-    &= \frac{e^{s}-1]{s} + \frac{1 - e^{s-1} - e^{s} + e^{s-1}}{s-1} \\
-    &= \frac{e^{s}-1]{s} + \frac{1 - e^{s}}{s-1} \\
-    &= \frac{1 - e^{s}]{s(s - 1)}
+    &= \frac{e^{s}-1}{s} + \frac{1 - e^{s-1} - e^{s} + e^{s-1}}{s-1} \\
+    &= \frac{e^{s}-1}{s} + \frac{1 - e^{s}}{s-1} \\
+    &= \frac{1 - e^{s}}{s(s - 1)}
 \end{align*}
 
-Thus the MGF for $X + Y$ will be $M(s) = \frac{1 - e^{s}]{s(s - 1)}$
+Thus the MGF for $X + Y$ will be $M(s) = \frac{1 - e^{s}}{s(s - 1)}$
 only when $s < 1$.
 
 \end{document}
