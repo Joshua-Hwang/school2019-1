@@ -1,0 +1,240 @@
+\documentclass{article}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{verbatim}
+
+\linespread{1.3}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+\setcounter{secnumdepth}{0}
+\setcounter{MaxMatrixCols}{20}
+
+\title{Assignment 4}
+\author{Joshua Hwang (44302650)}
+\date{25 May}
+
+\begin{document}
+\maketitle
+
+\section{ENIGMA}
+\subsection{Keyspace}
+Each rotor of the ENIGMA can have 26 possible starting positions
+(An English letter must be chosen). Thus the rotors have $26^3$
+possible states.
+
+The plugboard can have up to 6 wires.
+Consider the case with all 6 wires used. We pick the first two letters out of
+${}^{26}C_2$ then ${}^{24}C_2$ and so on for each wire giving us.
+\[
+    {}^{26}C_2 \times {}^{24}C_2 \times {}^{22}C_2 \times {}^{20}C_2
+        \times {}^{18}C_2 \times {}^{16}C_2
+\]
+
+Since there is no order to the pairs we divide by $6!$. We repeat this
+process for less than 6 wires. Our results are below,
+\begin{align*}
+    \text{6 wires} &= 100391791500 \\
+    \text{5 wires} &= 5019589575 \\
+    \text{4 wires} &= 164038875 \\
+    \text{3 wires} &= 3453450 \\
+    \text{2 wires} &= 44850 \\
+    \text{1 wire}  &= 325 \\
+\end{align*}
+
+From here we sum them up to give 105578918575 for wire combinations.
+Thus the ENIGMA keyspace is $105578918575 \times 26^3 1855655072874200$.
+In scientific notation this is $1.86 \times 10^15$
+
+\subsection{Knowing rotor products}
+
+First looking at $A$ and $D$ we can see $A$ may pair \texttt{r} wth anything
+from \texttt{omwbldxvyiqe}. From this single pairing the remaining
+\texttt{guthapznfcs} are given pairs. Thus $A$ has 12 total possiblities and
+$D$ is dependent on whatever configuration $A$ is.
+
+$B$ and $E$ have the same situation except there are two choices to be made.
+Pairing \texttt{u} with something in \texttt{lxnqvckbjm} and pairing \texttt{d}
+with something in \texttt{fz}. From these two choices we have
+$10 \times 2 = 20$.
+
+Using the exact same technique shown with $BE$ we get $9 \times 3 = 27$ for
+$CF$.
+
+\subsection{Find rotor configurations}
+We know \texttt{qfoezw} must be 6 of the same letter. For the first encrypted
+letter we have \texttt{q} which must have come from the letters
+\texttt{rguthapznfcs}. The second letter \texttt{f} must have come from
+\texttt{dr} and since the encrypted letter \texttt{q} and \texttt{f}
+are the same plain text we can determine that the letter must be \texttt{r}.
+
+Just from this pairing we can determine that $A$ maps \texttt{r} to \texttt{q}.
+Now the rotors can be deduced,
+\begin{verbatim}
+-----------------------------------For A---------------------------------------
+(r, q)
+(g, i)
+(u, y)
+(t, v)
+(h, x)
+(a, d)
+(p, l)
+(z, b)
+(n, w)
+(f, m)
+(c, o)
+(s, e)
+
+(j, k)
+
+-----------------------------------For D---------------------------------------
+(q, g)
+(i, u)
+(y, t)
+(v, h)
+(x, a)
+(d, p)
+(l, z)
+(b, n)
+(w, f)
+(m, c)
+(o, s)
+(e, r)
+
+(j, k)
+\end{verbatim}
+
+Now we can easily determine that \texttt{h} maps to \texttt{x} for rotor $A$.
+So we also know $B$ will map \texttt{x} to \texttt{o}.
+We know $B$ maps \texttt{r} to \texttt{f} which allows us to determine
+\texttt{(r, f)} and \texttt{(d, z)} pairs.
+
+We also know \texttt{x} to \texttt{o} which gives us complete knowledge of
+rotors $B$ and $E$.
+\begin{verbatim}
+-----------------------------------For B---------------------------------------
+(r, f)
+(d, z)
+
+(o, x)
+(w, l)
+(a, m)
+(h, j)
+(t, b)
+(g, k)
+(p, c)
+(u, v)
+(i, q)
+(y, n)
+
+(e, s)
+
+-----------------------------------For E---------------------------------------
+(f, d)
+(z, r)
+
+(x, w)
+(l, a)
+(m, h)
+(j, t)
+(b, g)
+(k, p)
+(c, u)
+(v, i)
+(q, y)
+(n, o)
+
+(e, s)
+\end{verbatim}
+
+The process is repeated again for $CF$.
+\begin{verbatim}
+-----------------------------------For C---------------------------------------
+(x, m)
+(y, h)
+(b, s)
+
+(o, r)
+(w, v)
+(a, c)
+(e, l)
+(u, z)
+(d, k)
+(j, n)
+(i, g)
+(p, t)
+
+(q, f)
+
+-----------------------------------For F---------------------------------------
+(m, y)
+(h, b)
+(s, x)
+
+(r, w)
+(v, a)
+(c, e)
+(l, u)
+(z, d)
+(k, j)
+(n, i)
+(g, p)
+(t, o)
+
+(q, f)
+\end{verbatim}
+
+\section{Substitution-permutation network}
+The operation to create a differential table is quite straightforward,
+\begin{align*}
+    x^* &= x \oplus \Delta x \\
+    y^* &= S(x^*) \\
+    \Delta y &= y^* \oplus y \\
+\end{align*}
+
+Where the function $S(x)$ is the S-box.
+The above process constructed the table below,
+\begin{verbatim}
+           |          delta Y          |
+  X  |  Y  | delta X = 1 | delta X = 9 |
+-----+-----+-------------+-------------+
+  0  |  e  |      c      |      a      |
+  1  |  2  |      c      |      d      |
+  2  |  1  |      2      |      8      |
+  3  |  3  |      2      |      6      |
+  4  |  d  |      4      |      1      |
+  5  |  9  |      4      |      1      |
+  6  |  0  |      6      |      b      |
+  7  |  6  |      6      |      1      |
+  8  |  f  |      b      |      d      |
+  9  |  4  |      b      |      a      |
+  a  |  5  |      c      |      6      |
+  b  |  9  |      c      |      8      |
+  c  |  8  |      4      |      1      |
+  d  |  c  |      4      |      1      |
+  e  |  7  |      c      |      1      |
+  f  |  b  |      c      |      b      |
+
+\end{verbatim}
+
+\subsection{Find specific differential trail}
+ZZZ
+1001 0000 0000 1001
+
+0001 0000 0000 0001 sbox
+0000 0000 0000 1001 permute
+
+0000 0000 0000 0001 sbox
+0000 0000 0000 0001 permute
+
+0000 0000 0000 0010 sbox
+0000 0001 0000 0000 permute
+
+\subsection{Determine which bits of $K_5$ can be deduced}
+The bits from $K_{5,5} \to K_{5,8}$.
+
+
+\end{document}

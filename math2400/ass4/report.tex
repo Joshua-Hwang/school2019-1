@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{float}
+
+\linespread{1.3}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+
+\title{Assignment 4}
+\author{Joshua Hwang (44302650)}
+\date{26 May}
+
+\begin{document}
+\maketitle
+
+\section{Prove statement}
+Since $f$ is a continuous function we know $F(x) = \int_0^x f(t) \diff t$
+exists and $F'(x) = f(x)$. Thus,
+\begin{align*}
+    \int_0^x \int_0^t f(u) \diff u \diff t
+    &= \int_0^x F(t) \diff t \\
+    &= \int_0^x 1 \times F(t) \diff t \\
+    &= t \times F(t) \Big|_0^x - \int_0^x tf(t) \diff t
+    && \text{Split into parts} \\
+    &= x \times F(x) - \int_0^x tf(t) \diff t \\
+    &= x \times \int_0^x f(t) \diff t - \int_0^x tf(t) \diff t
+    && \text{From the statement we made above} \\
+    &= \int_0^x xf(t) \diff t - \int_0^x tf(t) \diff t \\
+    &= \int_0^x f(t)(x-t) \diff t \\
+    &= \int_0^x f(u)(x-u) \diff u \\
+    &= RHS \\
+\end{align*}
+
+\section{Integrate $\sin x$}
+\subsection{Evaluate limits of sequences}
+We evaluate each integral for the general $a_n$ and $b_n$.
+\begin{align*}
+    a_n &= \int_{-\pi n}^{\pi n} \sin x \diff x \\
+    &= -\cos x \Big|_{-\pi n}^{\pi n} \\
+    &= \cos (-\pi n) - \cos (\pi n) \\
+    &= \cos (\pi n) - \cos (\pi n)
+    && \text{Cosine is an even function} \\
+    &= 0
+\end{align*}
+
+Since $a_n = 0$ $\forall n$, $\lim_{n \to \infty} a_n = 0$.
+
+\begin{align*}
+    b_n &= \int_{-2\pi n}^{\pi + 2\pi n} \sin x \diff x \\
+    &= -\cos x \Big|_{-2\pi n}^{\pi + 2\pi n} \\
+    &= \cos (-2\pi n) - \cos (\pi + 2\pi n) \\
+    &= \cos (2\pi n) - \cos (\pi + 2\pi n)
+    && \text{Cosine is an even function} \\
+    &= \cos (0) - \cos (\pi)
+    && \text{Cosine has period $2\pi$} \\
+    &= 1 - -1 = 2
+\end{align*}
+
+Since $b_n = 2$ $\forall n$, $\lim_{n \to \infty} b_n = 2$.
+
+\subsection{Improper integral}
+The integral exists if the right hand side can be evaluated.
+\begin{align*}
+    \int_{-\infty}^{\infty} \sin x \diff x
+    &= \lim_{b \to -\infty} \int_{b}^{0} \sin x \diff x
+    + \lim_{a \to \infty} \int_{0}^{a} \sin x \diff x \\
+    &= \lim_{b \to -\infty} \cos (b) - \cos (0)
+    + \lim_{a \to \infty} \cos (0) - \cos (a) \\
+    &= \lim_{b \to -\infty} \cos (b) - \lim_{a \to \infty} \cos (a) \\
+\end{align*}
+
+The right hand side limits does not exist hence our improper integral
+does not exist.
+
+\section{Prove series converges}
+A series converges absolutely if the absolute version of the terms also
+converges.
+\begin{align*}
+    \sum_{n=1}^\infty \left| \frac{n^2 + \cos n}{e^{n^3}} \right|
+    &= \sum_{n=1}^\infty \frac{\left| n^2 + \cos n \right|}{e^{n^3}} \\
+    &< \sum_{n=1}^\infty \frac{\left| n^2 \right| + \left| \cos n \right|}
+    {e^{n^3}} \\
+    &= \sum_{n=1}^\infty \frac{\left| n^2 \right|}{e^{n^3}}
+    + \frac{\left| \cos n \right|}{e^{n^3}} \\
+    &= \sum_{n=1}^\infty \frac{\left| n^2 \right|}{e^{n^3}}
+    + \sum_{n=1}^\infty \frac{\left| \cos n \right|}{e^{n^3}} \\
+\end{align*}
+
+Now we just have to prove these two sums converge to prove our initial sum
+converges. 
+
+\section{The final question}
+
+ZZZ - use the L definition of the integral
+
+\end{document}
