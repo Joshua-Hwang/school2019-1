@@ -91,7 +91,24 @@ converges.
 \end{align*}
 
 Now we just have to prove these two sums converge to prove our initial sum
-converges. 
+converges.
+
+We perform the ratio test on this series,
+\begin{align*}
+    \lim_{n \to \infty} \left| \frac{(n+1)^2}{e^{(n+1)^3}} \middle/ \frac{n^2}{e^{n^3}} \right|
+    &= \lim_{n \to \infty} \left| \frac{(n+1)^2}{n^2} \frac{e^{n^3}}{e^{(n+1)^3}} \right| \\
+    &= \lim_{n \to \infty} \left| \frac{(n+1)^2}{n^2} e^{n^3-(n+1)^3} \right| \\
+    &= \left| \lim_{n \to \infty} \frac{(n+1)^2}{n^2} \lim_{n \to \infty} e^{-(3n^2+3n+1)} \right|
+    && \text{This works because, as we shall show, the limits exist for both parts} \\
+    &= \left| \lim_{n \to \infty} \frac{n^2 + 2n + 1}{n^2} \lim_{n \to \infty} e^{-(3n^2+3n+1)} \right| \\
+    &= \left| \lim_{n \to \infty} \left(1 + \frac{2}{n} + \frac{1}{n^2} \right) \lim_{n \to \infty} e^{-(3n^2+3n+1)} \right| \\
+    &= \left| 1 \times \lim_{n \to \infty} e^{-(3n^2+3n+1)} \right| \\
+    &= \left| 1 \times \lim_{n \to \infty} 0 \right| \\
+    &= 0 < 1
+\end{align*}
+
+Thus our ratio test shows that $\sum_{n=1}^\infty \frac{\left| n^2 \right|}{e^{n^3}}$
+is convergent.
 
 \section{The final question}
 
