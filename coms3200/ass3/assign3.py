@@ -17,7 +17,7 @@ class ARPTable:
         # if in subnet look for ARP entry return None if no port found
         # return None for missing gateway too
         # check if bits match up to the subnet*8th bit
-        if bin_ip(key)[:8*subnet] == bin_ip(next(iter(self._table.keys())))[:8*subnet]:
+        if self.in_subnet(key):
             # in subnet so look for it
             return self._table.get(key, None)
         else:
@@ -26,12 +26,15 @@ class ARPTable:
     def __setitem__(self, key, value):
         # ensure the key is in the subnet (all externals should be sent through
         # gateway)
-        if len(self._table) == 0 \
-            or bin_ip(key)[:8*subnet] == bin_ip(next(iter(self._table.keys())))[:8*subnet]:
+        if len(self._table) == 0 or self.in_subnet(key):
             self._table.__setitem__(key, value)
 
     def get(self, key, default):
         return self._table.get(key, default)
+    def in_subnet(self, key):
+        left = bin_ip(key)[:self._subnet]
+        right = bin_ip(next(iter(self._table.keys())))[:self._subnet]
+        return bin_ip(key)[:self._subnet] == bin_ip(next(iter(self._table.keys())))[:self._subnet]
 
 # contains the programs current IP, port, buffer size etc.
 class ConnectionInfo:
@@ -47,8 +50,8 @@ class ConnectionInfo:
     def create_sock(self):
         if hasattr(self, "_sock"):
             return
-        self._sock = socket.socket(connInfo.family, connInfo.type)
-        self._sock.bind((connInfo.ip, connInfo.port))
+        self._sock = socket.socket(self.family, self.type)
+        self._sock.bind((self.ip, self.port))
     def get_sock(self):
         return self._sock if hasattr(self, "_sock") else None
     @property
@@ -127,10 +130,10 @@ class FragmentHolder:
             ret += data
         return ret
 
-# converts an IP into its binary format (four bytes)
+# converts an IP into its binary format (string of 1s and 0s)
 def bin_ip(data):
     ret = ""
-    parts = data.split(':')
+    parts = data.split('.')
     for part in parts:
         ret += bin(int(part))[2:].zfill(8)
     return ret
@@ -159,7 +162,8 @@ def read_packet(data):
     for c in header:
         # bin puts '0b' at the front
         # we also pad the left with 0s
-        bits = bin(ord(c))[2:].zfill(8)
+        # NOTE: we can only do this assuming data is a byte string
+        bits = bin(c)[2:].zfill(8)
         headerBits += bits
 
     ret['Version'] = int(headerBits[0:4], 2)
@@ -189,7 +193,7 @@ def print_packet(header, data=None):
     if header['Protocol'] == 0:
         data = header['Content'] if data is None else data
         print('Message received from %s: "%s"' \
-            % (ipAddr, data))
+            % (ipAddr, data.encode()))
     else:
         protocol = hex(header['Protocol'])
         print('Message received from %s with protocol %s' \
@@ -216,7 +220,7 @@ def listen_loop(connInfo, arpTable):
             # is it a fragmented packet?
             # if printFrag is true we print that we got the whole thing
             printData = None
-            if not (packet['MF flag'] or packet['Fragment Offset']):
+            if not packet['MF flag'] and not packet['Fragment Offset']:
                 # complete packet
                 # you don't have to printFrag since this is simple
                 printData = packet['Content']
@@ -241,8 +245,35 @@ def listen_loop(connInfo, arpTable):
 # create an IPv4 header for a single packet
 # return it
 # NOTE: ensure the DF flag is 0
-def construct_header(connInfo, frag):
-    return None
+# TTL should be seconds (localhost should be ~1 second and external ~30 idk)
+# returns byte string
+def construct_header(connInfo, destIP, totalLength, offset=0, mf=False):
+    headerBits = ""
+    headerBits += bin(4)[2:].zfill(4) # Version
+    headerBits += bin(5)[2:].zfill(4) # IHL
+    headerBits += bin(0)[2:].zfill(6) # DSCP - can be junk
+    headerBits += bin(0)[2:].zfill(2) # ECN - can be junk
+    headerBits += bin(totalLength)[2:].zfill(16) # Total Length
+    headerBits += bin(connInfo.id)[2:].zfill(16) # Identification
+    headerBits += bin(0)[2:].zfill(1) # Reserved flag - should always be 0
+    headerBits += bin(0)[2:].zfill(1) # DF flag
+    headerBits += bin(mf)[2:].zfill(1) # MF flag
+    headerBits += bin(offset)[2:].zfill(13) # Fragment Offset
+    headerBits += bin(30)[2:].zfill(8) # TTL
+    headerBits += bin(0)[2:].zfill(8) # Protocol
+    headerBits += bin(69)[2:].zfill(16) # Header Checksum - can be junk
+    headerBits += bin_ip(connInfo.fakeAddr) # Source IP
+    headerBits += bin_ip(destIP) # Destination IP
+
+    header = b''
+    for i in range(0,len(headerBits),8):
+        header += chr(int(headerBits[i:i+8],2)).encode()
+    return header
+
+def send_packets(connInfo, llAddr, packets):
+    sock = socket.socket(connInfo.family, connInfo.type)
+    for packet in packets:
+        sock.sendto(packet, (connInfo.ip, llAddr))
 
 # returns a list of data all of appropriate size also considering headers
 def split_data(connInfo, data):
@@ -253,16 +284,48 @@ def gw_set(connInfo, arpTable, ipAddr):
     arpTable.gateway = ipAddr
 # print the currently stored gateway IP address to stdout, or None
 def gw_get(connInfo, arpTable):
-    return arpTable.gateway
+    print(arpTable.gateway)
 # insert a mapping from ipAddr to llAddr
 def arp_set(connInfo, arpTable, ipAddr, llAddr):
-    arpTable[ipAddr] = llAddr
+    arpTable[ipAddr] = int(llAddr)
 # print the currently stored link layer address mapped to ipAddr or None
 def arp_get(connInfo, arpTable, ipAddr):
-    print(arpTable.get(ipAddr, None))
+    print(arpTable[ipAddr])
 # send a message
+# ID should be incremented
 def msg(connInfo, arpTable, ipAddr, payload):
-    return None
+    # check ipAddr is in ARP table
+    llAddr = arpTable[ipAddr]
+    if llAddr is not None:
+        # check if payload < max content
+        if len(payload) < connInfo.contentSize:
+            # create a single packet
+            # construct header
+            header = construct_header(connInfo, ipAddr, len(payload))
+            packet = header + payload.encode()
+            send_packets(connInfo, llAddr, [packet])
+        else:
+            payloads = split_data(connInfo, payload)
+            offset = 0
+            packets = []
+            for data in payloads[:-1]:
+                header = construct_header(connInfo, ipAddr, len(data), offset, mf=True)
+                offset += len(data)
+                packet = header + payload.encode()
+                packets.append(packet)
+            # final packet
+            header = construct_header(connInfo, ipAddr, len(data), offset, mf=False)
+            packet = header + payloads[-1].encode()
+            packets.append(packet)
+            send_packets(connInfo, llAddr, packets)
+
+        connInfo.id += 1
+    else:
+        # check if we're missing gateway or local
+        if arpTable.in_subnet(ipAddr):
+            print("No ARP entry found")
+        else:
+            print("No gateway found")
 # set the MTU of the network's links as the specifed value
 def mtu_set(connInfo, arpTable, value):
     connInfo.mtu = value
@@ -274,27 +337,27 @@ def mtu_get(connInfo, arpTable):
 def input_loop(connInfo, arpTable):
     while True:
         cmd = input("> ")
-        cmd = cmd.split(' ')
-        if cmd[0] == "gw":
-            if cmd[1] == "set":
-                gw_set(connInfo, arpTable, cmd[2])
-            elif cmd[1] == "get":
+        cmdParts = cmd.split(' ')
+        if cmdParts[0] == "gw":
+            if cmdParts[1] == "set":
+                gw_set(connInfo, arpTable, cmdParts[2])
+            elif cmdParts[1] == "get":
                 gw_get(connInfo, arpTable)
-        elif cmd[0] == "arp":
-            if cmd[1] == "set":
-                arp_set(connInfo, arpTable, cmd[2], cmd[3])
-            elif cmd[1] == "get":
-                arp_get(connInfo, arpTable, cmd[2])
-        elif cmd[0] == "msg":
-            msg(connInfo, arpTable, cmd[1], cmd[2])
-        elif cmd[0] == "mtu":
-            if cmd[1] == "set":
-                mtu_set(connInfo, arpTable, cmd[2])
-            elif cmd[1] == "get":
+        elif cmdParts[0] == "arp":
+            if cmdParts[1] == "set":
+                arp_set(connInfo, arpTable, cmdParts[2], cmdParts[3])
+            elif cmdParts[1] == "get":
+                arp_get(connInfo, arpTable, cmdParts[2])
+        elif cmdParts[0] == "msg":
+            msg = cmd.split('"')[1]
+            msg(connInfo, arpTable, cmdParts[1], msg)
+        elif cmdParts[0] == "mtu":
+            if cmdParts[1] == "set":
+                mtu_set(connInfo, arpTable, cmdParts[2])
+            elif cmdParts[1] == "get":
                 mtu_get(connInfo, arpTable)
-        elif cmd[0] == "exit":
+        elif cmdParts[0] == "exit":
             break
-
 
 # create a thread for listening and sending
 def main(connInfo, arpTable):
