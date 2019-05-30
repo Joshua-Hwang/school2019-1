@@ -77,7 +77,7 @@ class FragmentHolder:
         key = (srcIP, llAddr, identifier)
         # if doesn't exist, create
         if key not in self._datagrams:
-            self._datagrams[key] = (finished, [(offset, data)])
+            self._datagrams[key] = [finished, [(offset, data)]]
         else:
             # the final fragment is present or this is the final fragment
             self._datagrams[key][0] = self._datagrams[key][0] or finished
@@ -100,7 +100,7 @@ class FragmentHolder:
     def has_gaps(self, srcIP, llAddr, identifier):
         key = (srcIP, llAddr, identifier)
         if key not in self._datagrams:
-            return False
+            return True
         currLength = 0
         packets = sorted(self._datagrams[key][1])
         # store sorted because that work should be saved
@@ -108,9 +108,9 @@ class FragmentHolder:
         for offset, data in packets:
             # ensure current length is equal to current packets offset
             if currLength != offset:
-                return False
+                return True
             currLength += len(data)
-        return True
+        return False
 
     def is_complete(self, srcIP, llAddr, identifier):
         key = (srcIP, llAddr, identifier)
@@ -123,7 +123,7 @@ class FragmentHolder:
         if key not in self._datagrams:
             return None
         ret = b""
-        packets = sorted(self[key])
+        packets = sorted(self._datagrams[key][1])
         # store sorted because that work should be saved
         self._datagrams[key][1] = packets
         for _, data in packets:
@@ -192,12 +192,13 @@ def print_packet(header, data=None):
     # check protocol
     if header['Protocol'] == 0:
         data = header['Content'] if data is None else data
-        print('Message received from %s: "%s"' \
-            % (ipAddr, data.encode()))
+        print('\rMessage received from %s: "%s"\n> ' \
+            % (ipAddr, data.decode()), end='')
     else:
         protocol = hex(header['Protocol'])
-        print('Message received from %s with protocol %s' \
-            % (ipAddr, protocol))
+        print('\rMessage received from %s with protocol %s' \
+            % (ipAddr, protocol), end='')
+    sys.stdout.flush()
 
 # when listening for a thread we need to remove the initial prompt then place
 # our received messages then put our prompt back
@@ -208,39 +209,41 @@ def listen_loop(connInfo, arpTable):
     # we store fragmented packets by their identifier until fully complete
     storedFragments = FragmentHolder()
     while True:
+        data, addr = None, None
         try:
             # addr returns a tuple with (address, port)
             data, addr = sock.recvfrom(connInfo.mtu)
-            llAddr = addr[1]
-            # read IPv4 header
-            packet = read_packet(data)
-            # create tuple (src IP, ll-addr, id)
-            key = (packet['Source IP'], llAddr, packet['Identification'])
-            value = (packet['Fragment Offset'], packet['Content'])
-            # is it a fragmented packet?
-            # if printFrag is true we print that we got the whole thing
-            printData = None
-            if not packet['MF flag'] and not packet['Fragment Offset']:
-                # complete packet
-                # you don't have to printFrag since this is simple
-                printData = packet['Content']
-            elif packet['MF flag']:
-                # fragment found
-                storedFragments.append(*key, *value)
-                printData = storedFragments.defrag(*key) \
-                    if storedFragments.is_complete(*key) else None
-            else:
-                # last fragment
-                storedFragments.append(*key, *value, finished=True)
-                printData = storedFragments.defrag(*key) \
-                    if storedFragments.is_complete(*key) else None
-
-            if printData is not None:
-                print_packet(packet, printData)
-            # they didn't say we need to add addr to our ARP
         except Exception as e:
             print(e)
             return
+
+        llAddr = addr[1]
+        # read IPv4 header
+        packet = read_packet(data)
+        # create tuple (src IP, ll-addr, id)
+        key = (packet['Source IP'], llAddr, packet['Identification'])
+        value = (packet['Fragment Offset'], packet['Content'])
+        # is it a fragmented packet?
+        # if printFrag is true we print that we got the whole thing
+        printData = None
+        if not packet['MF flag'] and not packet['Fragment Offset']:
+            # complete packet
+            # you don't have to printFrag since this is simple
+            printData = packet['Content']
+        else:
+            if packet['MF flag']:
+                # fragment found
+                storedFragments.append(*key, *value)
+            else:
+                # last fragment
+                storedFragments.append(*key, *value, finished=True)
+
+            printData = storedFragments.defrag(*key) \
+                if storedFragments.is_complete(*key) else None
+
+        if printData is not None:
+            print_packet(packet, printData)
+        # they didn't say we need to add addr to our ARP
 
 # create an IPv4 header for a single packet
 # return it
@@ -277,7 +280,7 @@ def send_packets(connInfo, llAddr, packets):
 
 # returns a list of data all of appropriate size also considering headers
 def split_data(connInfo, data):
-    return None
+    return [data[i:i+connInfo.contentSize] for i in range(0, len(data), connInfo.contentSize)]
 
 # set the gateway IP address of the LAN the client is a part of to ipAddr
 def gw_set(connInfo, arpTable, ipAddr):
@@ -285,12 +288,14 @@ def gw_set(connInfo, arpTable, ipAddr):
 # print the currently stored gateway IP address to stdout, or None
 def gw_get(connInfo, arpTable):
     print(arpTable.gateway)
+    sys.stdout.flush()
 # insert a mapping from ipAddr to llAddr
 def arp_set(connInfo, arpTable, ipAddr, llAddr):
     arpTable[ipAddr] = int(llAddr)
 # print the currently stored link layer address mapped to ipAddr or None
 def arp_get(connInfo, arpTable, ipAddr):
     print(arpTable[ipAddr])
+    sys.stdout.flush()
 # send a message
 # ID should be incremented
 def msg(connInfo, arpTable, ipAddr, payload):
@@ -308,14 +313,15 @@ def msg(connInfo, arpTable, ipAddr, payload):
             payloads = split_data(connInfo, payload)
             offset = 0
             packets = []
-            for data in payloads[:-1]:
-                header = construct_header(connInfo, ipAddr, len(data), offset, mf=True)
-                offset += len(data)
+            for payload in payloads[:-1]:
+                header = construct_header(connInfo, ipAddr, len(payload), offset, mf=True)
                 packet = header + payload.encode()
                 packets.append(packet)
+                offset += len(payload)
             # final packet
-            header = construct_header(connInfo, ipAddr, len(data), offset, mf=False)
-            packet = header + payloads[-1].encode()
+            payload = payloads[-1]
+            header = construct_header(connInfo, ipAddr, len(payload), offset, mf=False)
+            packet = header + payload.encode()
             packets.append(packet)
             send_packets(connInfo, llAddr, packets)
 
@@ -326,12 +332,14 @@ def msg(connInfo, arpTable, ipAddr, payload):
             print("No ARP entry found")
         else:
             print("No gateway found")
+        sys.stdout.flush()
 # set the MTU of the network's links as the specifed value
 def mtu_set(connInfo, arpTable, value):
-    connInfo.mtu = value
+    connInfo.mtu = int(value)
 # print the currently stored MTU
 def mtu_get(connInfo, arpTable):
     print(connInfo.mtu)
+    sys.stdout.flush()
 
 # do the actions of the user
 def input_loop(connInfo, arpTable):
@@ -349,8 +357,8 @@ def input_loop(connInfo, arpTable):
             elif cmdParts[1] == "get":
                 arp_get(connInfo, arpTable, cmdParts[2])
         elif cmdParts[0] == "msg":
-            msg = cmd.split('"')[1]
-            msg(connInfo, arpTable, cmdParts[1], msg)
+            payload = cmd.split('"')[1]
+            msg(connInfo, arpTable, cmdParts[1], payload)
         elif cmdParts[0] == "mtu":
             if cmdParts[1] == "set":
                 mtu_set(connInfo, arpTable, cmdParts[2])
