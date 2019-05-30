@@ -196,7 +196,7 @@ def print_packet(header, data=None):
             % (ipAddr, data.decode()), end='')
     else:
         protocol = hex(header['Protocol'])
-        print('\rMessage received from %s with protocol %s' \
+        print('\rMessage received from %s with protocol %s\n> ' \
             % (ipAddr, protocol), end='')
     sys.stdout.flush()
 
