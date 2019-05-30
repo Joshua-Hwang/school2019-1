@@ -203,7 +203,7 @@ The above process constructed the table below,
 -----+-----+-------------+-------------+
   0  |  e  |      c      |      a      |
   1  |  2  |      c      |      d      |
-  2  |  1  |      2      |      8      |
+  2  |  1  |      2      |      b      |
   3  |  3  |      2      |      6      |
   4  |  d  |      4      |      1      |
   5  |  9  |      4      |      1      |
@@ -211,8 +211,8 @@ The above process constructed the table below,
   7  |  6  |      6      |      1      |
   8  |  f  |      b      |      d      |
   9  |  4  |      b      |      a      |
-  a  |  5  |      c      |      6      |
-  b  |  9  |      c      |      8      |
+  a  |  5  |      f      |      6      |
+  b  |  9  |      f      |      b      |
   c  |  8  |      4      |      1      |
   d  |  c  |      4      |      1      |
   e  |  7  |      c      |      1      |
@@ -220,21 +220,60 @@ The above process constructed the table below,
 
 \end{verbatim}
 
-\subsection{Find specific differential trail}
-ZZZ
-1001 0000 0000 1001
+ZZZ also convert to a frequency table (number of occurences)
+We have also done a frequency table
+\begin{verbatim}
+      |                          delta Y                              |
+ d    | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f |
+ e ---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+ l  1 | 0 | 0 | 2 | 0 | 4 | 0 | 2 | 0 | 0 | 0 | 0 | 2 | 4 | 0 | 0 | 2 |
+ t ---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+ a  9 | 0 | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 4 | 0 | 2 | 0 | 0 |
 
-0001 0000 0000 0001 sbox
+ X
+\end{verbatim}
+
+\subsection{Find specific differential trail}
+We attempt some rough working to deduce some facts about our search.
+The plan is to split $\frac{27}{2048}$ into a set of probabilities that
+are present in our table above.
+
+Since we're looking for a probablity of $\frac{27}{2048}$ and all our
+probabilities are with a denominator of 16 we can change $\frac{27}{2048}$
+to have a denominator as a power of 16. We know $16 = 2^4$ and $2048 = 2^11$.
+Thus we attempt to multiply our fraction by $2^1$ first.
+\[
+    \frac{27}{2048} = \frac{54}{4096} = \frac{3^2 \times 6}{16^3}
+\]
+
+But since we don't have a probability with a 3 or a 9 this cannot be the
+combination of probabilities we're trying to find. We now try the next
+multiple of 16 by multiplying by $2^5$.
+\[
+    \frac{27}{2048} = \frac{864}{65536} = \frac{6^3 \times 4}{16^4}
+\]
+
+These numbers of present in our table thus we could attempt to reach 4
+S-boxes with 3 conversions from 9 to 1 and a conversion with frequency 4.
+(Note: we could attempt to multiply by another 16 but that does not give
+us a possible combination.)
+
+\begin{verbatim}
+1001 0000 0000 1001 input
+
+0001 0000 0000 0001 sbox 6/16 * 6/16
 0000 0000 0000 1001 permute
 
-0000 0000 0000 0001 sbox
+0000 0000 0000 0001 sbox 6/16
 0000 0000 0000 0001 permute
 
-0000 0000 0000 0010 sbox
+0000 0000 0000 0010 sbox 4/16
 0000 0001 0000 0000 permute
+\end{verbatim}
 
 \subsection{Determine which bits of $K_5$ can be deduced}
-The bits from $K_{5,5} \to K_{5,8}$.
+From the illustration above we see we can deduce the bits from
+$K_{5,5} \to K_{5,8}$.
 
 
 \end{document}
