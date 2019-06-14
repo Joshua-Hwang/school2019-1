@@ -1,0 +1,388 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{float}
+
+\linespread{1.3}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\newcommand{\ts}{\textsuperscript}
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\p{\lparan}{\rparan}
+
+\title{Study notes}
+\author{Joshua Hwang (44302650)}
+
+\begin{document}
+\maketitle
+
+\section{Important theorems}
+\begin{itemize}
+    \item Tail of a sequence
+    \item Finding delta when things are complicated
+    \item When you can simplify limits
+\end{itemize}
+\section{Important proofs}
+\subsection{Every convergent sequence is bounded}
+pg 46
+
+Summary of proof: To fully complete the proof it must be done for below and
+above.
+A convergent sequence, by definition, will have an $N$\ts{th}
+term that will be extremely close to whatever the convergence is.
+Prior this point there are a finite number of elements less than $N$. We take
+the maximum of this set of finite elements (with the addition of the
+convergent value) and consider this the upper bound.
+
+\subsection{A sequence has at most one limit}
+pg 45
+
+Summary of proof: Consider the sequence has two limits $L$ and $R$.
+We attempt to prove that $L$ and $R$ approach each other.
+
+To do this we take
+$\abs*{L - R} = \abs*{L - x_n + x_n - R} = \abs*{(L - x_n) - (R - x_n)}$. The
+rest should be obvious.
+
+\subsection{Montone Convergence Theorem}
+pg 47
+
+``A monotone sequence is bounded if and only if it is convergent''
+
+Summary of proof: This theorem is an if and only if. Thus it is important to
+consider both ways. The proof is done for the greater than case but the less
+than is exactly the same.
+
+Consider a monotone bounded sequence.
+We take the lowest upper bound $L$. By definition of the lowest upper bound
+we know there exists $x > L - \epsilon$. Not only that but every element after
+$x$ also satisfies this statement because of the monotone part.
+
+Now we consider a monotone sequence that converges. Luckily we have already
+proven that convergent sequences are bounded.
+
+\subsection{Continuous function on closed interval is bounded}
+pg 114
+
+Summary of proof: To prove this we must use the contrapositive and the
+Bolzano-Weierstrass theorem.
+
+We first suppose the function is unbounded,
+then conclude the function must be discontinuous.
+We construct an infinite sequence $x_n$ where $f(x_n) > n$. But since our
+$x$s are bounded we can use Bolzano-Weierstrass theorem to find a convergent
+subsequence, essentially $x_\infty$. But this means our function isn't
+continuous since the definition of continuity states our limit must equal the
+value of the function at that point, $f(x) = \lim_{x \to x_\infty} f(x)$.
+(Forgot to mention our function maps to $\mathbb{R}$ which certainly doesn't
+have infinity in it)
+
+\subsection{Extreme Value Theorem}
+pg 115
+
+``If $f$ is a bounded continuous function then $f$ achieves both an absolute
+maximum and absolute minimum on the interval''
+
+Summary of proof: We use the previous theorem to prove this one. This proof
+does not give us a way to find such maximum or minimum but rather proves
+the existence of an $f(x)$ and $f(y)$ that give global maximum and minimum.
+
+We first note that $f$ is bounded meaning we can create a convergent sequence
+of $f(x)$s that converge to both the infinum and supremum. The issue is that
+the sequence of $x$s that let our $f$ converge to the infinum or supremum
+may not converge to anything. Luckily the Bolzano-Weierstrass theorem states
+that our bounded sequence of $x$s will have a convergent subsequence.
+
+Thus we have proven the existence of an $x$ that will satisfy the
+supremum/infinum.
+
+\subsection{Differentiable implies continuous}
+pg 138
+
+Summary of proof: This particular proof is very easy barring a single trick.
+All that is used are basic definitions.
+
+We first write the definition of the derivative and work towards proving the
+numerator, $\lim_{x \to c} f(x) - f(c)$ exists and is 0. From there we would
+be able to write $\lim_{x \to c} f(x) = f(c)$ which is the definition of
+continuity. We do this by the following,
+\begin{align*}
+    f(x) - f(c) &= \frac{f(x) - f(c)}{x - c} (x - c) \\
+\end{align*}
+
+Since the right hand side limit exists so does $\lim_{x \to c} f(x) - f(c)$.
+
+Note: it is important to state that $\lim_{x \to c} f(x) - f(c)$ exists which
+is why we are able to perform our operations.
+
+\subsection{Product rule for derivatives}
+pg 140
+
+Summary of proof: This is done through manipulating the defintion of the
+derivative. The key point is the use the following fact,
+$f(x)g(x) - f(c)g(c) = f(x)(g(x) - g(c)) + g(x)(f(x) - f(c))$.
+
+\subsection{Rolle's Theorem}
+pg 144
+
+``Consider a continuous differentiable function on $(a,b)$ such that
+$f(a) = f(b)$. There there exists $f'(c) = 0$ between $a$ and $b$''
+
+Summary of proof: We consider three cases of what happens in the interval
+$(a,b)$; there's a point greater than $f(a)=f(b)$, there's a point less than
+$f(a)=f(b)$ or all points are equal to $f(a)=f(b)$. All three cases gives us
+the respective conclusion, a local maxima, a local minima or flat.
+In all three cases we conclude there exists a point, $c$, where the
+derivative is 0.
+
+\subsection{Continuous functions are integrable}
+pg 169
+
+Note: I only have a proof for a closed bounded interval.
+
+Summary of proof: We make use of the fact a continuous function is uniformly
+continuous on a closed bound allowing us to create a small difference between
+partitions that.
+
+We find a $\delta > 0$ such that $|f(x) - f(y)| < \frac{\epsilon}{b-a}$. We now
+consider a partition with each partition's width being at least
+$\Delta x < \delta$. From here we consider each partition as a closed interval.
+We know the function reaches a absolute maximum and absolute minimum in this
+region but we also know that as $x$ and $y$ get closer
+$|f(x) - f(y)| < \frac{\epsilon}{b-a}$ will still hold. Thus our maximum $M$
+and our minimum $m$ in this region gives us
+$M - m < \frac{\epsilon}{b-a}$.
+
+From here we find the difference between the upper sum and the lower sum
+and attempt to place $M - m$ in there somewhere. By doing this we show that
+as the partitions get smaller our upper and lower sums get closer too.
+
+\subsection{Monotone function are integrable}
+Summary of proof: We can prove easily through the definition of the upper sum
+and lower sum. Computing these values will be simple for a monotonic function.
+Once we have both we find what happens to the difference as we increase the
+number of partitions.
+
+\subsection{Fundamental Theorem of Calculus}
+There are two forms of FTC\@. We first examine $\int_a^b f = F(b) - F(a)$.
+\subsubsection{First form $\int_a^b f = F(b) - F(a)$}
+We're given $F$ is a continuous, differentiable function and $f = F'$.
+
+Summary of proof: We use the Mean Value Theorem on each partition
+to get $F'(c_i)\Delta x_i = F(x_i) - F(x_{i+1})$. From here we produce an
+inequality involving the absolute minimum and maximum in that partition.
+\[
+    m_i \Delta x_i \leq F(x_i) - F(x_{i+1}) \leq M_i \Delta x_i
+\]
+From here we sum across all partitions which results in the middle part
+cancelling to give $F(b) - F(a)$.
+\[
+    \sum m_i \Delta x_i \leq F(b) - F(a) \leq \sum M_i \Delta x_i
+\]
+Which you can clearly see are the lower and upper sums. Since we know our
+function is Riemann integrable the left and right inequalities converge.
+Thus we apply sandwiching and conclude $\int_a^b f = F(b) - F(a)$.
+
+\subsubsection{Second form $F'(c) = f(c)$}
+We define $F(x) = \int_a^x f$. We're given $f$ is continuous and differentiable
+(obviously). From here we prove that $F$ is continuous and if $f$ is continuous
+then $F$ is differentiable and is $F' = f$ at that point.
+
+Summary of proof: There are a lot of tricks that need to be memorised here.
+The end of the proof intends to show that the difference between $F'(c)$ and
+$f(c)$ becomes arbitrarily small.
+
+We first consider a small region around $f(c)$. We create an inequality
+with some $f(x)$ floating within this region,
+$f(c) - \epsilon \leq f(x) \leq f(c) + \epsilon$
+Since $f$ is continuous we also know $|x - c| < \delta$.
+
+We then multiply our inequality by $x - c$. You may be confused by the
+swap from $f(x)(x-c) \to \int_c^x f$. They are not equal but rather
+the inequality will still hold for $\int_c^x f$. A helpful visual is to note
+the right hand side is the upper approximation rectangle while
+the left hand side is the opposite. The middle part is the true value of the
+area.
+\begin{alignat*}{2}
+    f(c) - \epsilon &\leq f(x) &\leq f(c) + \epsilon \\
+    (f(c) - \epsilon)(x-c) &\leq \int_c^x f &\leq (f(c) + \epsilon)(x-c) \\
+    f(c) - \epsilon &\leq \frac{\int_c^x f}{x-c} &\leq f(c) + \epsilon \\
+    f(c) - \epsilon &\leq \frac{F(x) - F(c)}{x-c} &\leq f(c) + \epsilon \\
+\end{alignat*}
+
+\[
+    \abs*{\frac{F(x) - F(c)}{x-c} - f(c)} \leq \epsilon
+\]
+
+\subsection{Weierstrauss M-test}
+The Weierstrauss M-test states that if we take the absolute value of the upper
+bound of each function in the series, i.e.\ take $M_i > \abs*{f_i(x)}$
+for all $x$. If we then sum all our $M$s and get a non-infinite result
+our series converges absolutely and uniformly.
+
+Summary of proof: The trickiest part is proving uniform convergence. This is
+achieved by taking the tail of our sum (Cauchy convergence).
+
+It's obvious that if $\sum \abs{f_i(x)} \leq \sum M_i$ and $\sum M_i$ converges
+\textbf{absolutely} then $\sum f_i(x)$.
+\begin{align*}
+    \abs{S_n(x) - S_m(x)} &= \abs{\sum_{i=m+1}^n f_i(x)} \\
+    &\leq \sum_{i=m+1}^n \abs{f_i(x)} \\
+    &\leq \sum_{i=m+1}^n M_i
+    &\leq \epsilon
+\end{align*}
+The final step makes use of the Cauchy criterion (which is available in the
+reals). A sequence is convergent in the reals if and only if it is Cauchy.
+
+Note: for some strange reason we're allowed to have $\leq$ despite never
+allowing it previously.
+
+\subsection{Uniform limits of continuous functions are continuous}
+Summary of proof: we attempt to prove that the limit function $f$ reaches
+is continuous by use of the definition of continuity,
+$\abs*{f(x) - f(x_0)} < \epsilon$. From here we attempt to find a $\delta > 0$
+for our corresponding $\epsilon$. We now add the terms $f_n(x)$ and $f_n(x_0)$
+to the $\abs*{f(x) - f(x_0)}$. Then we can split them up with the triangle
+inequality. We should eventually find every term is a known limit with
+$\delta$s that exist.
+
+\section{Multivariate and vector functions}
+Please note: $(x,y)$ is referring to the inner product.
+\subsection{Useful inequalities}
+Cauchy inequality
+\[
+    \abs*{(x,y)} \leq \norm{x} \norm{y}
+\]
+
+Triangle inequality
+\[
+    ||x + y|| \leq ||x|| + ||y||
+\]
+
+We attempt to prove the above.
+
+First prove Cauchy inequality.
+First consider the case where $x=0$ or $y=0$,then in inequality is obvious.
+Now consider $x\neq0$ and $y\neq0$. Consider two numbers $a,b \in \mathbb{R}$.
+\begin{align*}
+    0 &\leq {(|a| - |b|)}^2 \\
+    &= a^2 - 2|a||b| + b^2 \\
+    |ab| &\leq \frac{1}{2} (a^2 + b^2) \\
+\end{align*}
+
+Now we take $a = \frac{|x_i|}{||x||}$ And $b = \frac{|y_i|}{||y||}$.
+\begin{align*}
+    |\frac{x_i y_i}{||x|| ||y||}| &\leq \frac{1}{2} (\frac{|x_i|^2}{||x||^2} + \frac{|y_i|^2}{||y||^2}) \\
+\end{align*}
+
+We sum these inequalities over all $i$ to get,
+\begin{align*}
+    \sum \abs*{\frac{x_i y_i}{||x|| ||y||}} &\leq \frac{1}{2} (\sum \frac{|x_i|^2}{||x||^2} + \sum \frac{|y_i|^2}{||y||^2}) \\
+    &= \frac{1}{2||x||^2} \sum |x_i|^2 + \frac{1}{2||y||^2} \sum |y_i|^2 \\
+    &= \frac{1}{2||x||^2} ||x||^2 + \frac{1}{2||y||^2} ||y||^2 \\
+    \sum |\frac{x_i y_i}{||x|| ||y||}| &\leq 1 \\
+    \sum |x_i y_i| &\leq ||x|| ||y|| \\
+\end{align*}
+
+Using the triangle inequality (of reals which is already proven).
+\begin{align*}
+    |\sum x_i y_i| &\leq \sum |x_i y_i| \leq ||x|| ||y|| \\
+    |\sum x_i y_i| &\leq ||x|| ||y|| \\
+    |(x,y)| &\leq ||x|| ||y|| \\
+\end{align*}
+Thus we have proven Cauchy inequality. Note: for the dot product we actually
+have an equality with a cosine term, this inequality however is more general.
+
+Now for the proof of the triangle inequality,
+\begin{align*}
+    ||x + y||^2 &= (x+y, x+y) \\
+    &= (x,x) + (y,y) + (x,y) + (y,x) && \text{Through elementwise expansion} \\
+    &= ||x||^2 + ||y||^2 + 2(x,y) \\
+    &\leq ||x||^2 + ||y||^2 + 2|(x,y)| \\
+    &\leq ||x||^2 + ||y||^2 + 2||x|| ||y|| && \text{From our previous proof} \\
+    &= {(||x|| + ||y||)}^2 \\
+    ||x + y||^2 &\leq {(||x|| + ||y||)}^2 \\
+    ||x + y|| &\leq ||x|| + ||y|| \\
+\end{align*}
+
+Please note: in general the null factor law does not hold, $(x,y) = 0$ implies
+$x=0$ or $y=0$.
+
+\subsection{Definition of an open domain}
+A domain, $\Omega$, is considered open if for all $x \in \Omega$ there exists
+$\delta > 0$ such that if $|x - y| < \delta$ then $y \in \Omega$.
+
+Visually, this is like a blurred edge or border. No matter where you pick along
+the border, there will always be a radius of points surrounding $x$ that
+will also be part of the region. This definition of open will help with derivatives
+since the derivative requires a neighbourhood of points, this definition always
+guarantees a neighbourhood.
+
+\subsection{Jacobian}
+We make use of the fact that a multivariate function
+$f\colon \mathbb{R}^{n} \to \mathbb{R}^{m}$
+can be changed into a set of $f_i\colon \mathbb{R}^n \to \mathbb{R}$, a function
+for every dimension of the output.
+
+The Jacobian hasa  different function for every row and a different variable
+for every column. We create a rectangular (not necessarily square) matrix.
+If our input and output dimensions are equal then we can take a determinant.
+
+\subsection{Derivative of multivariate}
+We make the startling discovery that the Jacobian is the derivative!
+We alter the definition of the derivative to make more sense in the context of
+matrices. $J$ is the Jacobian (and derivative).
+\[
+    \lim_{h \to 0} \frac{|f(x_0 + h) - f(x_0) - Jh|}{|h|} = 0
+\]
+
+The definition had to be changed since a division of matrices does not always
+make sense (especially nonsquare). But we shall see that this generalisation
+was derived quite naturally. Consider the single variable case where
+$J \in \mathbb{R}$.
+\begin{align*}
+    \lim_{h \to 0} \frac{|f(x_0 + h) - f(x_0) - Jh|}{|h|} &= 0 \\
+    \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0) - Jh}{h} &= 0 \\
+    \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h} - J &= 0 \\
+    \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h} &= J
+\end{align*}
+
+\subsubsection{Remark}
+Even if a hypothetical Jacobian can be created (all partials are available)
+the function may not be differentiable (the definition above fails).
+
+\section{Inverse function theorem}
+\subsection{Single variable}
+If we have a function $f\colon I \to \mathbb{R}$ that is strictly monotone,
+is differentiable for all $x \in I$ and $f'(x) \neq 0$. Then the inverse
+function, $f^{-1}(x)$ is also differentiable at $y = f(x)$ and is in fact
+$\frac{1}{f'(x)}$
+Note: we can construct such a strictly monotone function by
+\textbf{restricting} our initial function.
+
+The proof is on pg 153 but we will outline it here.
+We take two points in $J$ and note that since $f$ is strictly monotone
+our inverse function will be continuous (pg 133). From there we
+consider the limit as these two points approach each other and we end up
+proving our theorem.
+
+The most obvious use of this fact is that we may now swap between
+the derivative of an inverse and the inverse of a derivative interchangeably
+when talking about continuous functions.
+
+\subsection{Multivariable}
+Consider a function with a square Jacobian
+($f\colon \mathbb{R}^n \to \mathbb{R}^n$)
+
+It's easy to see that $f' = J$ and $f'$ is only invertible when
+$\det(J) \neq 0$.
+
+If $\det(J) \neq 0$ at location $x_0$ then there exists an open ball (domain)
+around $x_0$ where $f$ is a bijection. Also the same conclusion is made as
+the previous seciton.
+\end{document}

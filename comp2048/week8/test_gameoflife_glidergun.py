@@ -30,12 +30,12 @@ img = plt.imshow(cells, animated=True)
 def animate(i):
     """perform animation step"""
     global life
-    
+
     life.evolve()
     cellsUpdated = life.getStates()
-    
+
     img.set_array(cellsUpdated)
-    
+
     return img,
 
 interval = 200 #ms

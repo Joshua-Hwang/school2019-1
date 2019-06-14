@@ -1,0 +1,56 @@
+\BOOKMARK [0][-]{chapter.1}{Preamble}{}% 1
+\BOOKMARK [1][-]{section*.1}{Terminology}{chapter.1}% 2
+\BOOKMARK [1][-]{section*.2}{Algorithms}{chapter.1}% 3
+\BOOKMARK [2][-]{section*.3}{Chinese Remainder Theorem}{section*.2}% 4
+\BOOKMARK [2][-]{section*.4}{Extended Euler Algorithm}{section*.2}% 5
+\BOOKMARK [2][-]{section*.5}{Dividing polynomials}{section*.2}% 6
+\BOOKMARK [0][-]{chapter.2}{Public key ciphers}{}% 7
+\BOOKMARK [1][-]{section*.6}{Diffie-Hellman key exchange protocol}{chapter.2}% 8
+\BOOKMARK [1][-]{section*.7}{RSA}{chapter.2}% 9
+\BOOKMARK [2][-]{section*.8}{Cryptanalysis}{section*.7}% 10
+\BOOKMARK [1][-]{section*.9}{ElGamal}{chapter.2}% 11
+\BOOKMARK [1][-]{section*.11}{PKI \(Public Key Infrastructure\)}{chapter.2}% 12
+\BOOKMARK [2][-]{section*.12}{Keysigning}{section*.11}% 13
+\BOOKMARK [2][-]{section*.13}{Man in the middle attacks}{section*.11}% 14
+\BOOKMARK [2][-]{section*.14}{Certificate authorities \(CA\)}{section*.11}% 15
+\BOOKMARK [2][-]{section*.15}{Web of trust}{section*.11}% 16
+\BOOKMARK [0][-]{chapter.3}{Stream ciphers}{}% 17
+\BOOKMARK [1][-]{section*.16}{Vigen\350re cipher}{chapter.3}% 18
+\BOOKMARK [2][-]{section*.17}{Cryptanalysis}{section*.16}% 19
+\BOOKMARK [1][-]{section*.21}{Autokey cipher}{chapter.3}% 20
+\BOOKMARK [2][-]{section*.22}{Cryptanalysis}{section*.21}% 21
+\BOOKMARK [1][-]{section*.23}{Linear feedback shift register \(LFSR\)}{chapter.3}% 22
+\BOOKMARK [2][-]{section*.24}{Cryptanalysis}{section*.23}% 23
+\BOOKMARK [1][-]{section*.25}{ENIGMA}{chapter.3}% 24
+\BOOKMARK [2][-]{section*.26}{Cryptanalysis}{section*.25}% 25
+\BOOKMARK [0][-]{chapter.4}{Random numbers}{}% 26
+\BOOKMARK [1][-]{section*.27}{Blum-Blum-Shub}{chapter.4}% 27
+\BOOKMARK [0][-]{chapter.5}{Block ciphers}{}% 28
+\BOOKMARK [1][-]{section*.28}{Hill cipher}{chapter.5}% 29
+\BOOKMARK [1][-]{section*.29}{Substitution permuation networks}{chapter.5}% 30
+\BOOKMARK [2][-]{section*.30}{Feistel and DES}{section*.29}% 31
+\BOOKMARK [2][-]{section*.33}{Cryptanalysis}{section*.29}% 32
+\BOOKMARK [2][-]{section*.37}{AES algorithm}{section*.29}% 33
+\BOOKMARK [2][-]{section*.43}{AES modes}{section*.29}% 34
+\BOOKMARK [0][-]{chapter.6}{Unconditional security}{}% 35
+\BOOKMARK [1][-]{section*.44}{Perfect secrecy}{chapter.6}% 36
+\BOOKMARK [1][-]{section*.45}{Shannon's Theorem}{chapter.6}% 37
+\BOOKMARK [2][-]{section*.46}{Shift cipher \(again!\)}{section*.45}% 38
+\BOOKMARK [2][-]{section*.47}{One time pad}{section*.45}% 39
+\BOOKMARK [2][-]{section*.48}{Mixed alphabet cipher}{section*.45}% 40
+\BOOKMARK [0][-]{chapter.7}{Secret sharing schemes}{}% 41
+\BOOKMARK [1][-]{section*.49}{Simple example}{chapter.7}% 42
+\BOOKMARK [1][-]{section*.50}{An additional aim}{chapter.7}% 43
+\BOOKMARK [1][-]{section*.51}{Shamir's scheme}{chapter.7}% 44
+\BOOKMARK [2][-]{section*.52}{Point to polynomial}{section*.51}% 45
+\BOOKMARK [1][-]{section*.53}{Chinese remainder theorem}{chapter.7}% 46
+\BOOKMARK [1][-]{section*.54}{Cheating}{chapter.7}% 47
+\BOOKMARK [2][-]{section*.55}{Shamir's scheme}{section*.54}% 48
+\BOOKMARK [0][-]{chapter.8}{Zero knowledge proofs}{}% 49
+\BOOKMARK [1][-]{section*.56}{Graph isomorphisms}{chapter.8}% 50
+\BOOKMARK [2][-]{section*.57}{Weakness}{section*.56}% 51
+\BOOKMARK [1][-]{section*.58}{Elliptic Curve Cryptography}{chapter.8}% 52
+\BOOKMARK [2][-]{section*.59}{Advantages and weaknesses}{section*.58}% 53
+\BOOKMARK [0][-]{chapter.9}{Quantum cryptogrpahy}{}% 54
+\BOOKMARK [1][-]{section*.60}{BB84 key exchange protocol}{chapter.9}% 55
+\BOOKMARK [2][-]{section*.61}{The protocol}{section*.60}% 56

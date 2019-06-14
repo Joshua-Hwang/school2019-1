@@ -67,7 +67,7 @@ gateway which we can find the MAC address of. We then find its ARP responses
 
 That is undoubtedly 10.240.129.251 (No. 20) which is sending DHCP offers.
 
-That is undoubtedly 130.102.189.53 (No. 72) which receiving and sending DNS packets .
+That is undoubtedly 130.102.71.160 (No. 72) which receiving and sending DNS packets .
 
 Second question
 (No. 20) DHCP offers include subnet information.
