@@ -1,0 +1,147 @@
+\documentclass[a4paper, twoside]{book}
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{verbatim}
+
+\linespread{1.5}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+\setcounter{secnumdepth}{-1}
+\setcounter{MaxMatrixCols}{20}
+\renewcommand{\arraystretch}{1.5}
+
+\newcommand{\ts}{\textsuperscript}
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand{\prob}{\mathbb{P}}
+\newcommand{\expect}{\mathbb{E}}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\p{\lparan}{\rparan}
+
+\title{Lecture notes}
+\author{Joshua Hwang (44302650)}
+
+\begin{document}
+\maketitle
+
+This document is designed to be an top down view of the network stack.
+Additional information must be acquired through alternative means.
+
+\tableofcontents
+
+\chapter{Overview and definitions}
+\begin{description}
+    \item [hosts] are end systems that are running network apps. Things like
+        PCs, servers, wireless laptops and smartphones just to name a few.
+    \item [communication links] are thiings like fiber, copper, radio,
+        satellite. Different mediums used to engage with the network.
+    \item [transmission rate] see bandwith
+    \item [packet switches] forwards packets. Some examples include routers
+        and link layer switches.
+    \item [protocols] define format, order of messages sent and received
+        among network entities, and actions taken on message transmission,
+        receipt.
+    \item [bandwidth] usually in bits per second
+\end{description}
+
+\paragraph{Nuts and bolts view}
+From a nuts and bolts view,
+the internet is a ``network of networks'', a load of interconnected ISPs.
+All this communication is handled by protocols. These protocols along with
+other internet standards are constructed by the Internet Engineering Task
+Force (\textbf{IETF}) which create Requests For Comments (\textbf{RFC}) which
+provide technical details of protocols.
+
+\paragraph{Service view}
+From a service point of view, the internet provides infrastructure for
+numerous services that applications can use. Programmers and app creators can
+use these services through hooks (?) that allow apps to send and receive
+and ``connect'' to the internet. The internet also provides service options
+analogous to postal service options.
+
+You can connect an end system to the internet through several means. These
+include residential access nets (home networks), institutional access networks
+(school or company) and mobile access networks.
+
+Digital Subscriber Line (DSL) uses existing telephone line to a central
+off
+
+\section{Checklist}
+Explain the core concepts of the terms used in computer networking.
+
+\chapter{Application Layer}
+In this section we covered,
+\begin{itemize}
+    \item HTTP
+    \item SMTP
+    \item DNS
+    \item P2P
+    \item CDN
+    \item Sockets
+\end{itemize}
+
+\section{Checklist}
+Find and explain the detailed information given in a HTTP request/response
+and DNS request/response or any of the other mentioned application layer
+protocols.
+
+\chapter{Transport Layer}
+In this section we covered,
+\begin{itemize}
+    \item UDP
+    \item TCP
+\end{itemize}
+
+\section{Checklist}
+Explain difference between UDP and TCP/@.
+
+Explain how to guarantee reliable delivery of application messages despite
+an underlying, unreliable channel.
+
+Find information in a TCP or UDP dump.
+
+\chapter{Network Layer}
+In this section we covered,
+\begin{itemize}
+    \item Data Plane
+    \item Control Plane
+\end{itemize}
+
+\section{Checklist}
+Explain difference between distance vector and link state routing algorithms.
+
+Run Dijkstra's algorithm and Distance Vector algorithm (Bellman-Form
+algorithm).
+
+\chapter{Link Layer}
+
+\section{Checklist}
+Explain how parity bits work.
+
+Construct parity bit and also detect errors with parity bit.
+
+Explain 2D parity and its limitations.
+
+Calculate and show how CRC is used to detect errors.
+
+Explain why forward error correction (FEC) is used.
+
+Explain MAC addresses. Find relevant information in a MAC address.
+
+\chapter{Security}
+
+\section{Checklist}
+Explain security goals.
+
+Encrypt messages using classical ciphers.
+
+Briefly explain security solutions.
+
+\end{document}
